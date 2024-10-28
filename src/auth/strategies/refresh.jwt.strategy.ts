@@ -30,8 +30,8 @@ export class RefreshJwtStrategy extends PassportStrategy(
     })
   }
 
-  async validate(req: Request, payload: { id: string }): Promise<UserModel> {
-    const user = await this.userModel.findById(payload.id)
+  async validate(req: Request, payload: { sub: string }): Promise<UserModel> {
+    const user = await this.userModel.findById(payload.sub)
 
     if (user === null) {
       throw new UnauthorizedException('User not found!')

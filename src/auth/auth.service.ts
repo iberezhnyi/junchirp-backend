@@ -2,13 +2,10 @@ import { Injectable } from '@nestjs/common'
 import { ConfigService } from 'src/common/configs'
 import { Model } from 'mongoose'
 import { InjectModel } from '@nestjs/mongoose'
-import { JwtService } from '@nestjs/jwt'
-import {
-  generateAndUpdateTokens,
-  setRefreshTokenCookie,
-} from 'src/common/helpers'
+
 import { UserModel } from 'src/users/schemas'
 import { IAuthParams, IAuthResponse } from './interfaces'
+import { TokensService } from '@/common/tokens/tokens.service'
 
 @Injectable()
 export class AuthService {
@@ -16,31 +13,18 @@ export class AuthService {
     @InjectModel(UserModel.name)
     private readonly userModel: Model<UserModel>,
 
-    private readonly jwtService: JwtService,
+    private readonly tokensService: TokensService,
 
     private readonly configService: ConfigService,
   ) {}
 
-  async login({ user, res }: IAuthParams): Promise<IAuthResponse> {
+  async login({ res, user }: any): Promise<IAuthResponse> {
     const userId = user._id as string
 
-    const { access_token, refresh_token } = await generateAndUpdateTokens({
-      jwtService: this.jwtService,
-      configService: this.configService,
-      userId,
-      userModel: this.userModel,
-    })
+    const { access_token, refresh_token } =
+      await this.tokensService.generateAndUpdateTokens(userId, this.userModel)
 
-    // console.log(
-    //   'this.configService.isProduction :>> ',
-    //   this.configService.isProduction,
-    // )
-
-    setRefreshTokenCookie({
-      configService: this.configService,
-      refresh_token,
-      res,
-    })
+    await this.tokensService.setRefreshTokenCookie(refresh_token, res)
 
     return {
       message: 'Login successful',
@@ -72,18 +56,10 @@ export class AuthService {
   async refreshTokens({ user, res }: IAuthParams): Promise<IAuthResponse> {
     const userId = user._id as string
 
-    const { access_token, refresh_token } = await generateAndUpdateTokens({
-      jwtService: this.jwtService,
-      configService: this.configService,
-      userId,
-      userModel: this.userModel,
-    })
+    const { access_token, refresh_token } =
+      await this.tokensService.generateAndUpdateTokens(userId, this.userModel)
 
-    setRefreshTokenCookie({
-      configService: this.configService,
-      refresh_token,
-      res,
-    })
+    await this.tokensService.setRefreshTokenCookie(refresh_token, res)
 
     return {
       message: 'Refresh successful',

@@ -8,7 +8,7 @@ import { Request } from 'express'
 import { UserModel } from 'src/users/schemas'
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
     private readonly configService: ConfigService,
 
@@ -23,8 +23,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     })
   }
 
-  async validate(req: Request, payload: { id: string }): Promise<UserModel> {
-    const user = await this.userModel.findById(payload.id)
+  async validate(req: Request, payload: { sub: string }): Promise<UserModel> {
+    const user = await this.userModel.findById(payload.sub)
 
     if (user === null) {
       throw new UnauthorizedException('User not found!')

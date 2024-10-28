@@ -2,15 +2,16 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { ConfigService } from 'src/common/configs'
 import { Model } from 'mongoose'
 import { InjectModel } from '@nestjs/mongoose'
-import { JwtService } from '@nestjs/jwt'
+// import { JwtService } from '@nestjs/jwt'
 import * as bcrypt from 'bcrypt'
 import { UserModel } from './schemas'
-import {
-  generateAndUpdateTokens,
-  setRefreshTokenCookie,
-} from 'src/common/helpers'
+// import {
+//   generateAndUpdateTokens,
+//   setRefreshTokenCookie,
+// } from 'src/common/helpers'
 import { ICreateUser, IUpdateUser, IUserResponse } from './interfaces'
 import { IAuthResponse } from 'src/auth/interfaces'
+import { TokensService } from '@/common/tokens/tokens.service'
 
 @Injectable()
 export class UsersService {
@@ -18,7 +19,9 @@ export class UsersService {
     @InjectModel(UserModel.name)
     private readonly userModel: Model<UserModel>,
 
-    private readonly jwtService: JwtService,
+    // private readonly jwtService: JwtService,
+
+    private readonly tokensService: TokensService,
 
     private readonly configService: ConfigService,
   ) {}
@@ -40,18 +43,17 @@ export class UsersService {
 
     const userId = user._id as string
 
-    const { access_token, refresh_token } = await generateAndUpdateTokens({
-      jwtService: this.jwtService,
-      configService: this.configService,
-      userId,
-      userModel: this.userModel,
-    })
+    const { access_token, refresh_token } =
+      await this.tokensService.generateAndUpdateTokens(userId, this.userModel)
 
-    setRefreshTokenCookie({
-      configService: this.configService,
-      refresh_token,
-      res,
-    })
+    // const { access_token, refresh_token } = await generateAndUpdateTokens({
+    //   jwtService: this.jwtService,
+    //   configService: this.configService,
+    //   userId,
+    //   userModel: this.userModel,
+    // })
+
+    await this.tokensService.setRefreshTokenCookie(refresh_token, res)
 
     return {
       message: 'Registration successful',

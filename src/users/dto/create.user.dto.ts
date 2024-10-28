@@ -29,7 +29,7 @@ export class CreateUserDto {
       message: 'Email format is invalid',
     },
   )
-  @Transform(({ value }) => value.toLowerCase())
+  // @Transform(({ value }) => value.toLowerCase())
   @Validate(IsEmailUnique)
   email: string
 

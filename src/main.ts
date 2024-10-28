@@ -20,16 +20,16 @@ async function bootstrap() {
 
   app.enableCors(corsOptions)
 
-  // app.useGlobalPipes(new ValidationPipe())
+  app.useGlobalPipes(new ValidationPipe())
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: true, // Включает преобразования
-      transformOptions: {
-        enableImplicitConversion: true,
-      },
-    }),
-  )
+  // app.useGlobalPipes(
+  //   new ValidationPipe({
+  //     transform: true, // Включает преобразования
+  //     transformOptions: {
+  //       enableImplicitConversion: true,
+  //     },
+  //   }),
+  // )
 
   useContainer(app.select(AppModule), { fallbackOnErrors: true })
 
