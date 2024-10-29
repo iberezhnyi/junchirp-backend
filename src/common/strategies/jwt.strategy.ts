@@ -1,19 +1,17 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
-import { ConfigService } from 'src/common/configs'
-import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
 import { Request } from 'express'
-import { UserModel } from 'src/users/schemas'
+import { ConfigService } from '@/common/configs'
+import { UserModel } from '@/users/schemas'
+import { UsersService } from '@/users'
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
     private readonly configService: ConfigService,
 
-    @InjectModel(UserModel.name)
-    private readonly userModel: Model<UserModel>,
+    private readonly usersService: UsersService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -24,7 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(req: Request, payload: { sub: string }): Promise<UserModel> {
-    const user = await this.userModel.findById(payload.sub)
+    const user = await this.usersService.findOneById(payload.sub)
 
     if (user === null) {
       throw new UnauthorizedException('User not found!')

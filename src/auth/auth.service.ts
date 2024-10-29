@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common'
-import { ConfigService } from 'src/common/configs'
+import { ConfigService } from '@/common/configs'
+import { TokensService } from '@/common/tokens'
 import { Model } from 'mongoose'
 import { InjectModel } from '@nestjs/mongoose'
-
-import { UserModel } from 'src/users/schemas'
-import { IAuthParams, IAuthResponse } from './interfaces'
-import { TokensService } from '@/common/tokens/tokens.service'
+import { UserModel } from '@/users/schemas'
+import { IAuthParams, IAuthResponse } from '@/auth/interfaces'
 
 @Injectable()
 export class AuthService {

@@ -9,7 +9,7 @@ import {
   Matches,
   Validate,
 } from 'class-validator'
-import { IsEmailUnique } from 'src/common/validators'
+import { IsEmailUnique } from '@/common/validators'
 
 export class CreateUserDto {
   @IsString()

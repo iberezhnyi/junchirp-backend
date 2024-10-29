@@ -1,17 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
-import { ConfigService } from 'src/common/configs'
 import { Model } from 'mongoose'
 import { InjectModel } from '@nestjs/mongoose'
-// import { JwtService } from '@nestjs/jwt'
 import * as bcrypt from 'bcrypt'
-import { UserModel } from './schemas'
-// import {
-//   generateAndUpdateTokens,
-//   setRefreshTokenCookie,
-// } from 'src/common/helpers'
-import { ICreateUser, IUpdateUser, IUserResponse } from './interfaces'
-import { IAuthResponse } from 'src/auth/interfaces'
-import { TokensService } from '@/common/tokens/tokens.service'
+
+import { UserModel } from '@/users/schemas'
+import { TokensService } from '@/common/tokens'
+import { ICreateUser, IUpdateUser, IUserResponse } from '@/users/interfaces'
+import { IAuthResponse } from '@/auth/interfaces'
 
 @Injectable()
 export class UsersService {
@@ -19,11 +14,7 @@ export class UsersService {
     @InjectModel(UserModel.name)
     private readonly userModel: Model<UserModel>,
 
-    // private readonly jwtService: JwtService,
-
     private readonly tokensService: TokensService,
-
-    private readonly configService: ConfigService,
   ) {}
 
   async createUser({
@@ -45,13 +36,6 @@ export class UsersService {
 
     const { access_token, refresh_token } =
       await this.tokensService.generateAndUpdateTokens(userId, this.userModel)
-
-    // const { access_token, refresh_token } = await generateAndUpdateTokens({
-    //   jwtService: this.jwtService,
-    //   configService: this.configService,
-    //   userId,
-    //   userModel: this.userModel,
-    // })
 
     await this.tokensService.setRefreshTokenCookie(refresh_token, res)
 
@@ -124,7 +108,7 @@ export class UsersService {
     return this.userModel.find().exec()
   }
 
-  async findOne(id: string): Promise<UserModel> {
+  async findOneById(id: string): Promise<UserModel> {
     const user = await this.userModel.findById(id).exec()
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`)
@@ -132,7 +116,7 @@ export class UsersService {
     return user
   }
 
-  async findByEmail(email: string): Promise<UserModel | null> {
+  async findOneByEmail(email: string): Promise<UserModel | null> {
     return this.userModel.findOne({ email }).exec()
   }
 }

@@ -1,11 +1,10 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
-
-import { ConfigService } from '@/common/configs'
+import { Response } from 'express'
 import { Model } from 'mongoose'
+import { JwtService } from '@nestjs/jwt'
+import { ConfigService } from '@/common/configs'
 import { UserModel } from '@/users/schemas'
 import { IAuthTokens } from '@/common/interfaces'
-import { Response } from 'express'
 
 @Injectable()
 export class TokensService {
@@ -36,7 +35,7 @@ export class TokensService {
 
     const isDevelopment = this.configService.isDevelopment
 
-    // Check this exception!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //! Check this exception!
     if (!access_token || !refresh_token)
       throw new InternalServerErrorException(
         isDevelopment ? 'Failed to generate tokens' : '',
@@ -47,7 +46,7 @@ export class TokensService {
     return { access_token, refresh_token }
   }
 
-  // Async needed?????????????
+  //! Async needed?
   async setRefreshTokenCookie(
     refresh_token: string,
     res: Response,

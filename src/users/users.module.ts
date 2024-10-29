@@ -1,17 +1,13 @@
 import { Module } from '@nestjs/common'
-import { ConfigModule } from 'src/common/configs'
-// import { JwtModule } from '@nestjs/jwt'
 import { MongooseModule } from '@nestjs/mongoose'
-import { UserModel, UserModelSchema } from './schemas'
-import { UsersService } from './users.service'
-import { UsersController } from './users.controller'
-import { TokensModule } from '@/common/tokens/tokens.module'
+
+import { TokensModule } from '@/common/tokens'
+import { UserModel, UserModelSchema } from '@/users/schemas'
+import { UsersController, UsersService } from '@/users'
 
 @Module({
   imports: [
     TokensModule,
-    // JwtModule,
-    ConfigModule,
     MongooseModule.forFeature([
       { name: UserModel.name, schema: UserModelSchema },
     ]),

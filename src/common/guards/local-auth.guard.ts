@@ -4,9 +4,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
-import { LoginUserDto } from '@/auth/dto'
 import { plainToInstance } from 'class-transformer'
 import { validate, ValidationError } from 'class-validator'
+import { LoginUserDto } from '@/auth/dto'
 
 @Injectable()
 export class LocalAuthGuard extends AuthGuard('local') {
@@ -17,7 +17,7 @@ export class LocalAuthGuard extends AuthGuard('local') {
     const loginUserDto = plainToInstance(LoginUserDto, { email, password })
     const errors = await validate(loginUserDto)
 
-    //   TODO: if production mode change error message?
+    //! if production mode change error message?
     if (errors.length > 0) {
       //   throw new UnauthorizedException('Invalid email or password format')
       const validationErrors = errors

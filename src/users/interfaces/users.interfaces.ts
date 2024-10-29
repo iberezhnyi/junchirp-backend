@@ -1,6 +1,6 @@
 import { Response } from 'express'
-import { UserModel } from '../schemas'
-import { CreateUserDto, UpdateUserDto } from '../dto'
+import { CreateUserDto, UpdateUserDto } from '@/users/dto'
+import { UserModel } from '@/users/schemas'
 
 interface IUser extends Partial<UserModel> {
   role: string

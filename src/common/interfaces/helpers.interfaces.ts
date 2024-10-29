@@ -1,8 +1,8 @@
 import { JwtService } from '@nestjs/jwt'
-import { ConfigService } from '../configs'
+import { ConfigService } from '@/common/configs'
 import { Response } from 'express'
 import { Model } from 'mongoose'
-import { UserModel } from 'src/users/schemas'
+import { UserModel } from '@/users/schemas'
 
 export interface IAuthTokens {
   access_token: string

@@ -1,5 +1,5 @@
 import { Response } from 'express'
-import { UserModel } from 'src/users/schemas'
+import { UserModel } from '@/users/schemas'
 
 interface IUser extends Partial<UserModel> {
   role: string

@@ -1,11 +1,11 @@
+import * as cookieParser from 'cookie-parser'
 import { NestFactory } from '@nestjs/core'
 import { ValidationPipe } from '@nestjs/common'
-import * as cookieParser from 'cookie-parser'
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface'
-import { ConfigService } from './common/configs'
-import { AppModule } from './app.module'
-
 import { useContainer } from 'class-validator'
+
+import { AppModule } from '@/app.module'
+import { ConfigService } from '@/common/configs'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -22,15 +22,6 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe())
 
-  // app.useGlobalPipes(
-  //   new ValidationPipe({
-  //     transform: true, // Включает преобразования
-  //     transformOptions: {
-  //       enableImplicitConversion: true,
-  //     },
-  //   }),
-  // )
-
   useContainer(app.select(AppModule), { fallbackOnErrors: true })
 
   const configService = app.get(ConfigService)
@@ -45,4 +36,5 @@ async function bootstrap() {
       : console.log('Server started successfully'),
   )
 }
+
 bootstrap()

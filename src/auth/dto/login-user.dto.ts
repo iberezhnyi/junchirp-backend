@@ -1,13 +1,4 @@
-// import { IsEmailUnique } from '@/common/validators'
-// import { Transform } from 'class-transformer'
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  Length,
-  Matches,
-  // Validate,
-} from 'class-validator'
+import { IsEmail, IsNotEmpty, IsString, Length, Matches } from 'class-validator'
 
 export class LoginUserDto {
   @IsString()
@@ -23,7 +14,5 @@ export class LoginUserDto {
       message: 'Email format is invalid',
     },
   )
-  // @Transform(({ value }) => value.toLowerCase())
-  // @Validate(IsEmailUnique)
   email: string
 }

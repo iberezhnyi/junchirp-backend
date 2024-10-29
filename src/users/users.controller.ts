@@ -9,12 +9,13 @@ import {
   Req,
 } from '@nestjs/common'
 import { Request } from 'express'
+
 import { JwtAuthGuard, RolesGuard } from 'src/common/guards'
 import { Roles } from 'src/common/decorators'
-import { UserModel } from './schemas'
-import { UsersService } from './users.service'
-import { UpdateUserDto } from './dto'
-import { IUserResponse } from './interfaces'
+import { UserModel } from '@/users/schemas'
+import { UsersService } from '@/users'
+import { UpdateUserDto } from '@/users/dto'
+import { IUserResponse } from '@/users/interfaces'
 
 @Controller('users')
 export class UsersController {
@@ -52,7 +53,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<UserModel> {
-    return await this.usersService.findOne(id)
+  async findOneById(@Param('id') id: string): Promise<UserModel> {
+    return await this.usersService.findOneById(id)
   }
 }

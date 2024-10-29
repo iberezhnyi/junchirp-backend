@@ -1,10 +1,10 @@
+import { ConflictException, Injectable } from '@nestjs/common'
 import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
   // ValidationArguments,
 } from 'class-validator'
-import { ConflictException, Injectable } from '@nestjs/common'
-import { UsersService } from '@/users/users.service'
+import { UsersService } from '@/users'
 
 @ValidatorConstraint({ async: true })
 @Injectable()
@@ -12,13 +12,11 @@ export class IsEmailUnique implements ValidatorConstraintInterface {
   constructor(private readonly userService: UsersService) {}
 
   async validate(email: string): Promise<boolean> {
-    console.log('email in IsEmailUnique :>> ', email)
-
-    const user = await this.userService.findByEmail(email)
+    const user = await this.userService.findOneByEmail(email)
 
     if (user) throw new ConflictException(`Email ${email} already exists`)
 
-    return !user // Возвращаем true, если email не найден
+    return !user // Return true if email not found
   }
 
   // defaultMessage(args: ValidationArguments): string {
