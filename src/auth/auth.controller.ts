@@ -15,12 +15,12 @@ import {
   LocalAuthGuard,
   RefreshJwtGuard,
 } from 'src/common/guards'
+import { AuthService } from '@/auth/auth.service' //! TODO
+import { UsersService } from '@/users'
 import { UserModel } from '@/users/schemas'
-import { AuthService } from './auth.service'
-import { UsersService } from 'src/users/users.service'
-import { CreateUserDto } from 'src/users/dto'
-import { IAuthResponse } from './interfaces'
-import { IUserResponse } from 'src/users/interfaces'
+import { CreateUserDto } from '@/users/dto'
+import { IAuthResponse } from '@/auth/interfaces'
+import { IUserResponse } from '@/users/interfaces'
 
 @Controller('auth')
 export class AuthController {

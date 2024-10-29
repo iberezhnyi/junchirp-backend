@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
+import {
+  forwardRef,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+} from '@nestjs/common'
 import { PassportModule } from '@nestjs/passport'
 import { ConfigModule } from '@/common/configs'
 import { TokensModule } from '@/common/tokens'
@@ -14,7 +19,12 @@ import { NormalizeEmailMiddleware } from '@/common/middlewares'
 import { IsEmailUnique } from '@/common/validators'
 
 @Module({
-  imports: [TokensModule, PassportModule, UsersModule, ConfigModule],
+  imports: [
+    TokensModule,
+    PassportModule,
+    forwardRef(() => UsersModule),
+    ConfigModule,
+  ],
   providers: [
     AuthService,
     LocalStrategy,
@@ -23,6 +33,7 @@ import { IsEmailUnique } from '@/common/validators'
     IsEmailUnique,
   ],
   controllers: [AuthController],
+  exports: [AuthService],
 })
 export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

@@ -3,7 +3,6 @@ import { NestFactory } from '@nestjs/core'
 import { ValidationPipe } from '@nestjs/common'
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface'
 import { useContainer } from 'class-validator'
-
 import { AppModule } from '@/app.module'
 import { ConfigService } from '@/common/configs'
 
