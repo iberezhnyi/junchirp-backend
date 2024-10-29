@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose'
 import * as bcrypt from 'bcrypt'
 
 import { UserModel } from '@/users/schemas'
-import { TokensService } from '@/common/tokens'
+import { TokensService } from '@/common/tokens/tokens.service'
 import { ICreateUser, IUpdateUser, IUserResponse } from '@/users/interfaces'
 import { IAuthResponse } from '@/auth/interfaces'
 

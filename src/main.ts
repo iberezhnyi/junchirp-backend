@@ -4,7 +4,7 @@ import { ValidationPipe } from '@nestjs/common'
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface'
 import { useContainer } from 'class-validator'
 import { AppModule } from '@/app.module'
-import { ConfigService } from '@/common/configs'
+import { ConfigService } from '@/common/configs/config.service'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)

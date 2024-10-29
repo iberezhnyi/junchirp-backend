@@ -1,4 +1,4 @@
-import { ConfigService } from '@/common/configs'
+import { ConfigService } from '@/common/configs/config.service'
 import { MongooseModuleOptions } from '@nestjs/mongoose'
 
 export const getMongoConfig = async (

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
-import { ConfigService } from '@/common/configs'
-import { TokensService } from '@/common/tokens'
+import { ConfigService } from '@/common/configs/config.service'
+import { TokensService } from '@/common/tokens/tokens.service'
 import { Model } from 'mongoose'
 import { InjectModel } from '@nestjs/mongoose'
 import { UserModel } from '@/users/schemas'

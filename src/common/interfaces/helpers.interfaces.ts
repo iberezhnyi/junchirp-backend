@@ -1,5 +1,5 @@
 import { JwtService } from '@nestjs/jwt'
-import { ConfigService } from '@/common/configs'
+import { ConfigService } from '@/common/configs/config.service'
 import { Response } from 'express'
 import { Model } from 'mongoose'
 import { UserModel } from '@/users/schemas'

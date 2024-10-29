@@ -13,7 +13,7 @@ import { Request } from 'express'
 import { JwtAuthGuard, RolesGuard } from 'src/common/guards'
 import { Roles } from 'src/common/decorators'
 import { UserModel } from '@/users/schemas'
-import { UsersService } from '@/users'
+import { UsersService } from '@/users/users.service'
 import { UpdateUserDto } from '@/users/dto'
 import { IUserResponse } from '@/users/interfaces'
 

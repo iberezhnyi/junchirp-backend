@@ -15,8 +15,8 @@ import {
   LocalAuthGuard,
   RefreshJwtGuard,
 } from 'src/common/guards'
-import { AuthService } from '@/auth/auth.service' //! TODO
-import { UsersService } from '@/users'
+import { AuthService } from '@/auth/auth.service'
+import { UsersService } from '@/users/users.service'
 import { UserModel } from '@/users/schemas'
 import { CreateUserDto } from '@/users/dto'
 import { IAuthResponse } from '@/auth/interfaces'
