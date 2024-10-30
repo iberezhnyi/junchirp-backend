@@ -1,20 +1,24 @@
+// import { UsersService } from '@/users/users.service'
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@/common/configs/config.service'
 import { TokensService } from '@/common/tokens/tokens.service'
 import { Model } from 'mongoose'
 import { InjectModel } from '@nestjs/mongoose'
+// import { EmailService } from '@/common/email/email.service'
 import { UserModel } from '@/users/schemas'
 import { IAuthParams, IAuthResponse } from '@/auth/interfaces'
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(UserModel.name)
-    private readonly userModel: Model<UserModel>,
-
     private readonly tokensService: TokensService,
 
     private readonly configService: ConfigService,
+
+    // private readonly usersService: UsersService,
+
+    @InjectModel(UserModel.name)
+    private readonly userModel: Model<UserModel>,
   ) {}
 
   async login({ res, user }: any): Promise<IAuthResponse> {

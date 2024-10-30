@@ -47,6 +47,30 @@ export class UserModel extends Document {
     default: null,
   })
   refresh_token: string | null
+
+  @Prop({
+    type: Boolean,
+    default: false,
+  })
+  isConfirmed: boolean
+
+  @Prop({
+    type: Number,
+    default: 0,
+  })
+  confirmationAttempts: number
+
+  @Prop({
+    type: String,
+    default: null,
+  })
+  confirmationCode: string | null
+
+  @Prop({
+    type: Date,
+    default: null,
+  })
+  confirmationCodeExpiresAt: Date | null
 }
 
 export const UserModelSchema = SchemaFactory.createForClass(UserModel)

@@ -29,12 +29,24 @@ export class CreateUserDto {
       message: 'Email format is invalid',
     },
   )
-  // @Transform(({ value }) => value.toLowerCase())
   @Validate(IsEmailUnique)
   email: string
 
   @IsString()
   @IsNotEmpty()
+  @Length(8, 20, { message: 'Password must be between 8 and 20 characters' })
+  @Matches(/(?=.*[A-Z])/, {
+    message: 'Password must contain at least one uppercase letter (A-Z)',
+  })
+  @Matches(/(?=.*[a-z])/, {
+    message: 'Password must contain at least one lowercase letter (a-z)',
+  })
+  @Matches(/(?=.*[0-9])/, {
+    message: 'Password must contain at least one number (0-9)',
+  })
+  @Matches(/(?=.*[!@#$%^&*(),.?":{}|<>])/, {
+    message: 'Password must contain at least one special character',
+  })
   password: string
 
   @IsEnum(['starter', 'pro', 'business'])

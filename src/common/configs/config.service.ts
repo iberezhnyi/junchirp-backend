@@ -5,6 +5,7 @@ import { ConfigService as NestConfigService } from '@nestjs/config'
 export class ConfigService {
   constructor(private readonly nestConfigService: NestConfigService) {}
 
+  //* Common
   get isProduction(): boolean {
     return this.nestConfigService.get<string>('NODE_ENV') === 'production'
   }
@@ -22,6 +23,7 @@ export class ConfigService {
     return port
   }
 
+  //* JWT
   get jwtSecret(): string {
     const secret = this.nestConfigService.get<string>('JWT_SECRET')
 
@@ -42,7 +44,7 @@ export class ConfigService {
     return secret
   }
 
-  // MongoDB
+  //* MongoDB
   get mongoUser(): string {
     const user = this.nestConfigService.get<string>('MONGO_USER')
 
@@ -81,5 +83,44 @@ export class ConfigService {
       )
 
     return dbName
+  }
+
+  //* Email
+  get smtpHost(): string {
+    const host = this.nestConfigService.get<string>('SMTP_HOST')
+
+    if (!host)
+      throw new Error('SMTP_HOST is not defined in the environment variables')
+
+    return host
+  }
+
+  get smtpPort(): number {
+    const port = this.nestConfigService.get<number>('SMTP_PORT')
+
+    if (!port)
+      throw new Error('SMTP_PORT is not defined in the environment variables')
+
+    return port
+  }
+
+  get smtpUser(): string {
+    const user = this.nestConfigService.get<string>('SMTP_USER')
+
+    if (!user)
+      throw new Error('SMTP_USER is not defined in the environment variables')
+
+    return user
+  }
+
+  get smtpPassword(): string {
+    const password = this.nestConfigService.get<string>('SMTP_PASSWORD')
+
+    if (!password)
+      throw new Error(
+        'SMTP_PASSWORD is not defined in the environment variables',
+      )
+
+    return password
   }
 }

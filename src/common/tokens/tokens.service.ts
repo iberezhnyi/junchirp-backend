@@ -41,6 +41,7 @@ export class TokensService {
         isDevelopment ? 'Failed to generate tokens' : '',
       )
 
+    //! TODO: Use userService!
     await userModel.findByIdAndUpdate(userId, { access_token, refresh_token })
 
     return { access_token, refresh_token }

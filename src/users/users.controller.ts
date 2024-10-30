@@ -7,6 +7,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  Post,
 } from '@nestjs/common'
 import { Request } from 'express'
 
@@ -20,6 +21,11 @@ import { IUserResponse } from '@/users/interfaces'
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @Post('confirm')
+  async confirmEmail(@Body('email') email: string, @Body('code') code: string) {
+    return this.usersService.confirmEmail(email, code)
+  }
 
   @UseGuards(JwtAuthGuard)
   @Patch()
