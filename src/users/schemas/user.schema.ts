@@ -58,19 +58,19 @@ export class UserModel extends Document {
     type: Number,
     default: 0,
   })
-  confirmationAttempts: number
+  confirmAttempts: number
 
   @Prop({
     type: String,
     default: null,
   })
-  confirmationCode: string | null
+  confirmCode: string | null
 
   @Prop({
     type: Date,
     default: null,
   })
-  confirmationCodeExpiresAt: Date | null
+  confirmCodeExpiresAt: Date | null
 }
 
 export const UserModelSchema = SchemaFactory.createForClass(UserModel)

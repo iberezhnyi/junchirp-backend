@@ -15,16 +15,26 @@ import { JwtAuthGuard, RolesGuard } from 'src/common/guards'
 import { Roles } from 'src/common/decorators'
 import { UserModel } from '@/users/schemas'
 import { UsersService } from '@/users/users.service'
-import { UpdateUserDto } from '@/users/dto'
+import { ResendConfirmCodeDto, UpdateUserDto } from '@/users/dto'
 import { IUserResponse } from '@/users/interfaces'
+import { VerifyEmailDto } from '@/users/dto'
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post('confirm')
-  async confirmEmail(@Body('email') email: string, @Body('code') code: string) {
-    return this.usersService.confirmEmail(email, code)
+  @Post('verify')
+  async verifyEmail(
+    @Body() verifyEmailDto: VerifyEmailDto,
+  ): Promise<IUserResponse> {
+    return await this.usersService.verifyEmail(verifyEmailDto)
+  }
+
+  @Post('resend-confirm-code')
+  async resendConfirmCode(
+    @Body() resendConfirmCodeDto: ResendConfirmCodeDto,
+  ): Promise<IUserResponse> {
+    return await this.usersService.resendConfirmCode(resendConfirmCodeDto)
   }
 
   @UseGuards(JwtAuthGuard)

@@ -1,7 +1,14 @@
 import { UsersService } from '@/users/users.service'
-import { forwardRef, Inject, Injectable } from '@nestjs/common'
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common'
 import { ConfigService } from '@/common/configs/config.service'
 import { sendEmail } from '@/common/configs/email'
+// import { getConfirmCode, getConfirmExpiresAtDate } from '@/common/helpers'
+import { UserModel } from '@/users/schemas'
 
 @Injectable()
 export class EmailService {
@@ -12,56 +19,103 @@ export class EmailService {
     private readonly usersService: UsersService,
   ) {}
 
-  async sendVerificationCode(email: string) {
-    const code = Math.floor(100000 + Math.random() * 900000).toString()
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes from the current time
+  private readonly MAX_ATTEMPTS = 3
 
-    const user = await this.usersService.findOneByEmailAndUpdate({
-      email,
-      updateFields: {
-        confirmationCode: code,
-        confirmationCodeExpiresAt: expiresAt,
-        $inc: { confirmationAttempts: 1 },
-      },
-    })
+  async sendConfirmCode({
+    email,
+    confirmCode,
+  }: {
+    email: string
+    confirmCode: string
+  }): Promise<void> {
+    // const confirmCode = getConfirmCode()
+    // const confirmExpiresAtDate = getConfirmExpiresAtDate()
 
-    if (user.confirmationAttempts >= 3) {
-      throw new Error('Exceeded the number of code request attempts.')
-    }
+    // await this.usersService.findOneByEmailAndUpdate({
+    //   email,
+    //   updateFields: {
+    //     confirmCode: confirmCode,
+    //     confirmCodeExpiresAt: confirmExpiresAtDate,
+    //     // $inc: { confirmAttempts: 1 },
+    //   },
+    // })
 
-    //! TODO: Reset the number of attempts
+    // if (user.confirmAttempts >= 3)
+    //   throw new Error('Exceeded the number of code request attempts.')
 
     await sendEmail({
       configService: this.configService,
       to: email,
-      subject: 'Verification code',
-      text: `Your verification code: ${code}`,
-      html: `<p>Your verification code: ${code}</p>`,
+      subject: 'Confirmation code',
+      text: `Your confirmation code: ${confirmCode}`,
+      html: `<p>Your confirmation code: ${confirmCode}</p>`,
     })
-    return code
+
+    // return confirmCode
   }
 
   async verifyCode(email: string, code: string) {
     const user = await this.usersService.findOneByEmail(email)
 
-    if (!user) throw new Error('User not found.')
-    if (user.confirmationCode !== code) throw new Error('Invalid code.')
-    if (
-      user.confirmationCodeExpiresAt &&
-      new Date() > user.confirmationCodeExpiresAt
-    )
-      throw new Error('Code expired.')
+    if (!user) throw new BadRequestException('User not found.')
 
-    const verifyUser = await this.usersService.findOneByEmailAndUpdate({
+    if (user.isConfirmed)
+      throw new BadRequestException('Account already confirmed.')
+
+    if (user.confirmCodeExpiresAt && new Date() > user.confirmCodeExpiresAt) {
+      await this.resetConfirmCode(email)
+
+      throw new BadRequestException('Code expired. Please request a new code.')
+    }
+
+    if (user.confirmCode !== code) {
+      await this.handleInvalidCodeAttempt(user)
+
+      throw new BadRequestException('Invalid code.')
+    }
+
+    return await this.verifyUser(email)
+  }
+
+  private async resetConfirmCode(email: string) {
+    await this.usersService.findOneByEmailAndUpdate({
+      email,
+      updateFields: {
+        confirmCode: null,
+        confirmCodeExpiresAt: null,
+        confirmAttempts: 0,
+      },
+    })
+  }
+
+  private async handleInvalidCodeAttempt(user: UserModel) {
+    const newAttempts = user.confirmAttempts + 1
+
+    if (newAttempts >= this.MAX_ATTEMPTS) {
+      await this.resetConfirmCode(user.email)
+
+      throw new BadRequestException(
+        'Too many attempts. Code reset. Request a new code.',
+      )
+    }
+
+    await this.usersService.findOneByEmailAndUpdate({
+      email: user.email,
+      updateFields: {
+        confirmAttempts: newAttempts,
+      },
+    })
+  }
+
+  private async verifyUser(email: string) {
+    return this.usersService.findOneByEmailAndUpdate({
       email,
       updateFields: {
         isConfirmed: true,
-        verificationCode: null,
-        verificationCodeExpiresAt: null,
-        // confirmationAttempts: 0,
+        confirmCode: null,
+        confirmCodeExpiresAt: null,
+        confirmAttempts: 0,
       },
     })
-
-    return verifyUser
   }
 }
