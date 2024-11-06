@@ -1,1 +1,1 @@
-export { IAuthParams, IAuthResponse } from './auth.interfaces'
+export { IRegisterUser, IAuthParams, IAuthResponse } from './auth.interfaces'

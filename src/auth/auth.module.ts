@@ -17,16 +17,16 @@ import { AuthService } from '@/auth/auth.service'
 import { AuthController } from '@/auth/auth.controller'
 import { NormalizeEmailMiddleware } from '@/common/middlewares'
 import { IsEmailUnique } from '@/common/validators'
+import { EmailModule } from '@/common/email/email.module'
 
 @Module({
   imports: [
-    TokensModule,
     PassportModule,
-
+    ConfigModule,
+    TokensModule,
+    EmailModule,
     // forwardRef(() => UsersModule),
     UsersModule,
-
-    ConfigModule,
   ],
   providers: [
     AuthService,

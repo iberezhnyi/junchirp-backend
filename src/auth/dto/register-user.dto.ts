@@ -10,8 +10,16 @@ import {
   Validate,
 } from 'class-validator'
 import { IsEmailUnique } from '@/common/validators'
+import { ApiProperty } from '@nestjs/swagger'
 
-export class CreateUserDto {
+export class RegisterUserDto {
+  @ApiProperty({
+    example: 'John Doe',
+    description:
+      'The name of the user, must contain only letters, spaces, apostrophes, and hyphens',
+    minLength: 3,
+    maxLength: 50,
+  })
   @IsString()
   @IsNotEmpty()
   @Length(3, 50, { message: 'Name must be between 3 and 50 characters' })
@@ -20,6 +28,13 @@ export class CreateUserDto {
   })
   userName: string
 
+  @ApiProperty({
+    example: 'johndoe@example.com',
+    description:
+      'The email of the user. It must be unique and follow a valid email format.',
+    minLength: 5,
+    maxLength: 254,
+  })
   @IsEmail()
   @IsNotEmpty()
   @Length(5, 254, { message: 'Email must be between 5 and 254 characters' })
@@ -32,6 +47,13 @@ export class CreateUserDto {
   @Validate(IsEmailUnique)
   email: string
 
+  @ApiProperty({
+    example: 'Password123!',
+    description:
+      'The password for the user, must be between 8 and 20 characters and include uppercase, lowercase, numbers, and special characters.',
+    minLength: 8,
+    maxLength: 20,
+  })
   @IsString()
   @IsNotEmpty()
   @Length(8, 20, { message: 'Password must be between 8 and 20 characters' })
@@ -49,6 +71,13 @@ export class CreateUserDto {
   })
   password: string
 
+  // @ApiProperty({
+  //   example: 'starter',
+  //   description:
+  //     'Subscription type of the user, optional, defaults to "starter".',
+  //   enum: ['starter', 'pro', 'business'],
+  //   required: false,
+  // })
   @IsEnum(['starter', 'pro', 'business'])
   @IsOptional()
   @Transform(({ value }) => value || 'starter')

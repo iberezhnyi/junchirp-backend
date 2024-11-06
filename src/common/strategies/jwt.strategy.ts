@@ -30,8 +30,13 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
     const tokenFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken()(req)
 
+    //! Check Error in Production
     if (user.access_token !== tokenFromRequest) {
-      throw new UnauthorizedException('Invalid access token')
+      throw new UnauthorizedException(
+        this.configService.isDevelopment
+          ? 'Invalid access token'
+          : 'Unauthorized',
+      )
     }
 
     return user

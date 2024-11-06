@@ -4,9 +4,10 @@ import { getMongoConfig } from '@/common/configs/mongo'
 import { ConfigModule } from '@/common/configs/config.module'
 import { ConfigService } from '@/common/configs/config.service'
 import { LoggerMiddleware } from '@/common/middlewares'
+import { TokensModule } from '@/common/tokens/tokens.module'
+import { EmailModule } from '@/common/email/email.module'
 import { AuthModule } from '@/auth/auth.module'
 import { UsersModule } from '@/users/users.module'
-import { EmailModule } from '@/common/email/email.module'
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { EmailModule } from '@/common/email/email.module'
       inject: [ConfigService],
       useFactory: getMongoConfig,
     }),
+    TokensModule,
     EmailModule,
     AuthModule,
     UsersModule,

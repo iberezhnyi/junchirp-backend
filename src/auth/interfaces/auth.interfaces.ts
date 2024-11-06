@@ -1,8 +1,11 @@
 import { Response } from 'express'
 import { UserModel } from '@/users/schemas'
+import { RegisterUserDto } from '@/auth/dto'
+import { IUser } from '@/users/interfaces'
 
-interface IUser extends Partial<UserModel> {
-  role: string
+export interface IRegisterUser {
+  res: Response
+  registerUserDto: RegisterUserDto
 }
 
 export interface IAuthParams {

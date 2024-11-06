@@ -1,1 +1,1 @@
-export { ICreateUser, IUpdateUser, IUserResponse } from './users.interfaces'
+export { IUpdateUser, IUserResponse, IUser } from './users.interfaces'

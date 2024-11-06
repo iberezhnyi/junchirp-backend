@@ -1,22 +1,28 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common'
-import { Response } from 'express'
-import { Model } from 'mongoose'
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { ConfigService } from '@/common/configs/config.service'
-import { UserModel } from '@/users/schemas'
-import { IAuthTokens } from '@/common/interfaces'
+import { UsersService } from '@/users/users.service'
+import {
+  IAuthTokens,
+  ISetRefreshTokenCookieParams,
+} from '@/common/tokens/interfaces'
 
 @Injectable()
 export class TokensService {
   constructor(
-    private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly jwtService: JwtService,
+
+    @Inject(forwardRef(() => UsersService))
+    private readonly usersService: UsersService,
   ) {}
 
-  async generateAndUpdateTokens(
-    userId: string,
-    userModel: Model<UserModel>,
-  ): Promise<IAuthTokens> {
+  async generateAndUpdateTokens(userId: string): Promise<IAuthTokens> {
     const access_token = await this.jwtService.signAsync(
       { sub: userId },
       {
@@ -41,49 +47,23 @@ export class TokensService {
         isDevelopment ? 'Failed to generate tokens' : '',
       )
 
-    //! TODO: Use userService!
-    await userModel.findByIdAndUpdate(userId, { access_token, refresh_token })
+    await this.usersService.findOneByIdAndUpdate(userId, {
+      access_token,
+      refresh_token,
+    })
 
     return { access_token, refresh_token }
   }
 
   //! Async needed?
-  async setRefreshTokenCookie(
-    refresh_token: string,
-    res: Response,
-  ): Promise<void> {
+  async setRefreshTokenCookie({
+    refresh_token,
+    res,
+  }: ISetRefreshTokenCookieParams): Promise<void> {
     await res.cookie('refresh_token', refresh_token, {
       httpOnly: true,
       secure: this.configService.isProduction,
       sameSite: this.configService.isProduction ? 'none' : 'lax',
     })
   }
-
-  // async updateTokensInDB(
-  //   userId: string,
-  //   userModel: Model<UserModel>,
-  // ): Promise<void> {
-  //   const { access_token, refresh_token } = await this.generateTokens(userId)
-
-  //   await userModel.findByIdAndUpdate(userId, { access_token, refresh_token })
-  // }
-
-  // async verifyToken(token: string, isRefreshToken = false) {
-  //   try {
-  //     const secret = isRefreshToken
-  //       ? this.configService.get<string>('JWT_REFRESH_SECRET')
-  //       : this.configService.get<string>('JWT_SECRET')
-  //     return await this.jwtService.verifyAsync(token, { secret })
-  //   } catch (error) {
-  //     return null
-  //   }
-  // }
-
-  // async refreshTokens(refreshToken: string) {
-  //   const payload = await this.verifyToken(refreshToken, true)
-  //   if (!payload) {
-  //     throw new Error('Invalid refresh token')
-  //   }
-  //   return this.generateTokens(payload.sub)
-  // }
 }

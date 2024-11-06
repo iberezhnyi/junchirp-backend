@@ -13,15 +13,16 @@ import { EmailModule } from '@/common/email/email.module'
   imports: [
     // forwardRef(() => AuthModule),
 
-    TokensModule,
+    // TokensModule,
     MongooseModule.forFeature([
       { name: UserModel.name, schema: UserModelSchema },
     ]),
+    forwardRef(() => TokensModule),
     forwardRef(() => EmailModule),
     // EmailModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],
-  exports: [UsersService, MongooseModule],
+  exports: [UsersService],
 })
 export class UsersModule {}

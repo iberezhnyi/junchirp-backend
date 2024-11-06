@@ -78,13 +78,10 @@ export class EmailService {
   }
 
   private async resetConfirmCode(email: string) {
-    await this.usersService.findOneByEmailAndUpdate({
-      email,
-      updateFields: {
-        confirmCode: null,
-        confirmCodeExpiresAt: null,
-        confirmAttempts: 0,
-      },
+    await this.usersService.findOneByEmailAndUpdate(email, {
+      confirmCode: null,
+      confirmCodeExpiresAt: null,
+      confirmAttempts: 0,
     })
   }
 
@@ -99,23 +96,17 @@ export class EmailService {
       )
     }
 
-    await this.usersService.findOneByEmailAndUpdate({
-      email: user.email,
-      updateFields: {
-        confirmAttempts: newAttempts,
-      },
+    await this.usersService.findOneByEmailAndUpdate(user.email, {
+      confirmAttempts: newAttempts,
     })
   }
 
   private async verifyUser(email: string) {
-    return this.usersService.findOneByEmailAndUpdate({
-      email,
-      updateFields: {
-        isConfirmed: true,
-        confirmCode: null,
-        confirmCodeExpiresAt: null,
-        confirmAttempts: 0,
-      },
+    return this.usersService.findOneByEmailAndUpdate(email, {
+      isConfirmed: true,
+      confirmCode: null,
+      confirmCodeExpiresAt: null,
+      confirmAttempts: 0,
     })
   }
 }

@@ -1,49 +1,96 @@
-// import { UsersService } from '@/users/users.service'
-import { Injectable } from '@nestjs/common'
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common'
+import * as bcrypt from 'bcrypt'
 import { ConfigService } from '@/common/configs/config.service'
 import { TokensService } from '@/common/tokens/tokens.service'
-import { Model } from 'mongoose'
-import { InjectModel } from '@nestjs/mongoose'
-// import { EmailService } from '@/common/email/email.service'
-import { UserModel } from '@/users/schemas'
 import { IAuthParams, IAuthResponse } from '@/auth/interfaces'
+import { UsersService } from '@/users/users.service'
+import { IRegisterUser } from '@/auth/interfaces'
+import { getConfirmCode, getConfirmExpiresAtDate } from '@/common/helpers'
+// import { IUserResponse } from '@/users/interfaces'
+import { ResendConfirmCodeDto, VerifyEmailDto } from '@/auth/dto'
+import { EmailService } from '@/common/email/email.service'
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly tokensService: TokensService,
-
     private readonly configService: ConfigService,
-
-    // private readonly usersService: UsersService,
-
-    @InjectModel(UserModel.name)
-    private readonly userModel: Model<UserModel>,
+    private readonly tokensService: TokensService,
+    private readonly emailService: EmailService,
+    private readonly usersService: UsersService,
   ) {}
 
-  async login({ res, user }: any): Promise<IAuthResponse> {
+  //* REGISTER
+  async register({
+    registerUserDto,
+    res,
+  }: IRegisterUser): Promise<IAuthResponse> {
+    const { email, password, userName } = registerUserDto
+
+    const hashedPassword = await bcrypt.hash(password, 10)
+    const confirmCode = getConfirmCode()
+    const confirmCodeExpiresAt = getConfirmExpiresAtDate()
+
+    const user = await this.usersService.createUser({
+      userName,
+      email,
+      password: hashedPassword,
+      confirmCode,
+      confirmCodeExpiresAt,
+    })
+
     const userId = user._id as string
 
     const { access_token, refresh_token } =
-      await this.tokensService.generateAndUpdateTokens(userId, this.userModel)
+      await this.tokensService.generateAndUpdateTokens(userId)
 
-    await this.tokensService.setRefreshTokenCookie(refresh_token, res)
+    await this.tokensService.setRefreshTokenCookie({ refresh_token, res })
+
+    // await this.emailService.sendConfirmCode({ email, confirmCode })
+
+    return {
+      message: 'Registration successful',
+      access_token,
+      user: {
+        id: user._id,
+        userName: user.userName,
+        email: user.email,
+        // subscription: user.subscription,
+        // role: user.roles[0],
+      },
+    }
+  }
+
+  //* LOGIN
+  async login({ res, user }: IAuthParams): Promise<IAuthResponse> {
+    const userId = user._id as string
+
+    const { access_token, refresh_token } =
+      await this.tokensService.generateAndUpdateTokens(userId)
+
+    await this.tokensService.setRefreshTokenCookie({ refresh_token, res })
 
     return {
       message: 'Login successful',
       access_token,
       user: {
         id: user._id,
+        userName: user.userName,
         email: user.email,
-        subscription: user.subscription,
-        role: user.roles[0],
+        // subscription: user.subscription,
+        // role: user.roles[0],
       },
     }
   }
 
+  //* LOGOUT
   async logout({ user, res }: IAuthParams): Promise<IAuthResponse> {
-    await this.userModel.findByIdAndUpdate(user.id, {
+    await this.usersService.findOneByIdAndUpdate(user.id, {
       refresh_token: null,
+      access_token: null,
     })
 
     res.cookie('refresh_token', '', {
@@ -56,17 +103,51 @@ export class AuthService {
     return { message: 'Logout successful' }
   }
 
+  //* REFRESH
   async refreshTokens({ user, res }: IAuthParams): Promise<IAuthResponse> {
     const userId = user._id as string
 
     const { access_token, refresh_token } =
-      await this.tokensService.generateAndUpdateTokens(userId, this.userModel)
+      await this.tokensService.generateAndUpdateTokens(userId)
 
-    await this.tokensService.setRefreshTokenCookie(refresh_token, res)
+    await this.tokensService.setRefreshTokenCookie({ refresh_token, res })
 
     return {
       message: 'Refresh successful',
       access_token,
     }
+  }
+
+  //* VERIFY
+  async verifyEmail(verifyEmailDto: VerifyEmailDto) {
+    const { email, code } = verifyEmailDto
+
+    await this.emailService.verifyCode(email, code)
+
+    return { message: 'Account successfully verified' }
+  }
+
+  //* RESEND-CONFIRM-CODE
+  async resendConfirmCode(resendConfirmCodeDto: ResendConfirmCodeDto) {
+    const { email } = resendConfirmCodeDto
+
+    const user = await this.usersService.findOneByEmail(email)
+
+    if (!user) throw new NotFoundException('User not found.')
+    if (user.isConfirmed)
+      throw new BadRequestException('Account already confirmed.')
+
+    const confirmCode = getConfirmCode()
+    const confirmExpiresAtDate = getConfirmExpiresAtDate()
+
+    await this.usersService.findOneByEmailAndUpdate(email, {
+      confirmCode: confirmCode,
+      confirmCodeExpiresAt: confirmExpiresAtDate,
+      // $inc: { confirmAttempts: 1 },
+    })
+
+    await this.emailService.sendConfirmCode({ email, confirmCode })
+
+    return { message: 'Confirmation code sent successfully' }
   }
 }
