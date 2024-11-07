@@ -20,15 +20,15 @@
 
     // "strict": true
     // "typeRoots": ["node_modules/@types"],
-    "types": [
-      "node",
-      "express",
-      "cookie-parser",
-      "bcrypt",
-      "passport-jwt",
-      "passport-local"
-    ],
-    "declarationDir": "./dist",
+    // "types": [
+    //   "node",
+    //   "express",
+    //   "cookie-parser",
+    //   "bcrypt",
+    //   "passport-jwt",
+    //   "passport-local"
+    // ],
+    // "declarationDir": "./dist",
     "paths": {
       "@/*": ["./src/*"]
       // "@/*": ["src/*"]

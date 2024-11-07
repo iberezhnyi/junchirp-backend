@@ -27,7 +27,7 @@ export class AppModule implements NestModule {
   constructor(private readonly configService: ConfigService) {}
 
   configure(consumer: MiddlewareConsumer) {
-    if (this.configService.isDevelopment)
-      consumer.apply(LoggerMiddleware).forRoutes('*')
+    // if (this.configService.isDevelopment)
+    consumer.apply(LoggerMiddleware).forRoutes('*')
   }
 }
