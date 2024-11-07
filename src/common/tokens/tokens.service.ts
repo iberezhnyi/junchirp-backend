@@ -1,9 +1,4 @@
-import {
-  forwardRef,
-  Inject,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common'
+import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { ConfigService } from '@/common/configs/config.service'
 import { UsersService } from '@/users/users.service'
@@ -17,8 +12,6 @@ export class TokensService {
   constructor(
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
-
-    @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
   ) {}
 

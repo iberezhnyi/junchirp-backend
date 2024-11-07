@@ -1,21 +1,13 @@
 import { UsersService } from '@/users/users.service'
-import {
-  BadRequestException,
-  forwardRef,
-  Inject,
-  Injectable,
-} from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { ConfigService } from '@/common/configs/config.service'
 import { sendEmail } from '@/common/configs/email'
-// import { getConfirmCode, getConfirmExpiresAtDate } from '@/common/helpers'
 import { UserModel } from '@/users/schemas'
 
 @Injectable()
 export class EmailService {
   constructor(
     private readonly configService: ConfigService,
-
-    @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
   ) {}
 

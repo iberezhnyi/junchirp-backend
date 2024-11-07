@@ -1,10 +1,5 @@
-import {
-  // forwardRef,
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-} from '@nestjs/common'
-import { PassportModule } from '@nestjs/passport'
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
+// import { PassportModule } from '@nestjs/passport'
 import { ConfigModule } from '@/common/configs/config.module'
 import { TokensModule } from '@/common/tokens/tokens.module'
 import { UsersModule } from '@/users/users.module'
@@ -21,11 +16,10 @@ import { EmailModule } from '@/common/email/email.module'
 
 @Module({
   imports: [
-    PassportModule,
+    // Pass portModule,
     ConfigModule,
     TokensModule,
     EmailModule,
-    // forwardRef(() => UsersModule),
     UsersModule,
   ],
   providers: [
@@ -36,8 +30,6 @@ import { EmailModule } from '@/common/email/email.module'
     IsEmailUnique,
   ],
   controllers: [AuthController],
-
-  // exports: [AuthService],
 })
 export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

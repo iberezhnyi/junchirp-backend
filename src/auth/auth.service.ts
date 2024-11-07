@@ -146,7 +146,7 @@ export class AuthService {
       // $inc: { confirmAttempts: 1 },
     })
 
-    await this.emailService.sendConfirmCode({ email, confirmCode })
+    // await this.emailService.sendConfirmCode({ email, confirmCode })
 
     return { message: 'Confirmation code sent successfully' }
   }
