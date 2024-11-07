@@ -30,6 +30,8 @@
     //   "uuid"
     // ]
 
+    "declarationDir": "./dist",
+
     "paths": {
       "@/*": ["./src/*"]
       // "@/*": ["src/*"]
