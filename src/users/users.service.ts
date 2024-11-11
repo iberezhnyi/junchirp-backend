@@ -1,24 +1,19 @@
-import {
-  // BadRequestException,
-  // forwardRef,
-  // Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { Express } from 'express'
 import { Model } from 'mongoose'
 import { InjectModel } from '@nestjs/mongoose'
+import { ConfigService } from '@/common/configs/config.service'
+import { UploadService } from '@/common/upload-service/upload.service'
 import { UserModel } from '@/users/schemas'
-// import { TokensService } from '@/common/tokens/tokens.service'
 import { IUpdateUser, IUser, IUserResponse } from '@/users/interfaces'
-// import { EmailService } from '@/common/email/email.service'
-// import { ResendConfirmCodeDto, VerifyEmailDto } from '@/users/dto'
-// import { getConfirmCode, getConfirmExpiresAtDate } from '@/common/helpers'
 
 @Injectable()
 export class UsersService {
   constructor(
     // @Inject(forwardRef(() => TokensService))
     // private readonly tokensService: TokensService,
+    private readonly configService: ConfigService,
+    private readonly uploadService: UploadService,
 
     @InjectModel(UserModel.name)
     private readonly userModel: Model<UserModel>,
@@ -32,8 +27,53 @@ export class UsersService {
         id: user._id,
         userName: user.userName,
         email: user.email,
+        avatar: user.avatar,
         // subscription: user.subscription,
         // role: user.roles[0],
+      },
+    }
+  }
+
+  //* UPLOAD AVATAR
+  async uploadUserAvatar({
+    user,
+    file,
+  }: {
+    user: UserModel
+    file: Express.Multer.File
+  }): Promise<IUserResponse> {
+    const fileName = await this.uploadService.saveFile(file)
+    user.avatar = fileName
+
+    await user.save()
+
+    return {
+      message: 'Avatar uploaded successfully',
+      user: {
+        id: user._id,
+        userName: user.userName,
+        email: user.email,
+        avatar: user.avatar,
+      },
+    }
+  }
+
+  //* DELETE AVATAR
+  async deleteUserAvatar(user: UserModel): Promise<IUserResponse> {
+    if (user.avatar && user.avatar !== this.configService.defaultAvatarFilePath)
+      await this.uploadService.deleteFile(user.avatar)
+
+    user.avatar = this.configService.defaultAvatarFilePath
+
+    await user.save()
+
+    return {
+      message: 'Avatar successfully deleted',
+      user: {
+        id: user._id,
+        userName: user.userName,
+        email: user.email,
+        avatar: user.avatar,
       },
     }
   }

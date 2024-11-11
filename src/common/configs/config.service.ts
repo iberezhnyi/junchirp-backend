@@ -1,9 +1,20 @@
 import { Injectable } from '@nestjs/common'
 import { ConfigService as NestConfigService } from '@nestjs/config'
+import * as fs from 'fs'
+import * as path from 'path'
 
 @Injectable()
 export class ConfigService {
-  constructor(private readonly nestConfigService: NestConfigService) {}
+  private readonly uploadDir = path.join(__dirname, '..', '..', 'uploads')
+  private readonly avatarsDir = path.join(this.uploadDir, 'avatars')
+
+  constructor(private readonly nestConfigService: NestConfigService) {
+    if (!fs.existsSync(this.uploadDir))
+      fs.mkdirSync(this.uploadDir, { recursive: true })
+
+    if (!fs.existsSync(this.avatarsDir))
+      fs.mkdirSync(this.avatarsDir, { recursive: true })
+  }
 
   //* Common
   get isProduction(): boolean {
@@ -122,5 +133,23 @@ export class ConfigService {
       )
 
     return password
+  }
+
+  //* Files
+  get uploadFolderPath(): string {
+    if (!this.uploadDir) throw new Error('Upload directory is not defined')
+
+    return this.uploadDir
+  }
+
+  get uploadAvatarPath(): string {
+    if (!this.avatarsDir) throw new Error('Upload directory is not defined')
+
+    return this.avatarsDir
+  }
+
+  get defaultAvatarFilePath(): string {
+    return path.join(this.avatarsDir, 'user-avatar.jpg')
+    // return path.join(this.avatarsDir, 'user-avatar.png')
   }
 }

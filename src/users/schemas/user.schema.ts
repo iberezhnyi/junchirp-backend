@@ -38,6 +38,11 @@ export class UserModel extends Document {
 
   @Prop({
     type: String,
+  })
+  avatar: string
+
+  @Prop({
+    type: String,
     default: null,
   })
   access_token: string | null

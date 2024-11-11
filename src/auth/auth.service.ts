@@ -38,6 +38,7 @@ export class AuthService {
       userName,
       email,
       password: hashedPassword,
+      avatar: this.configService.defaultAvatarFilePath,
       confirmCode,
       confirmCodeExpiresAt,
     })
@@ -58,6 +59,7 @@ export class AuthService {
         id: user._id,
         userName: user.userName,
         email: user.email,
+        avatar: user.avatar,
         // subscription: user.subscription,
         // role: user.roles[0],
       },
@@ -80,6 +82,7 @@ export class AuthService {
         id: user._id,
         userName: user.userName,
         email: user.email,
+        avatar: user.avatar,
         // subscription: user.subscription,
         // role: user.roles[0],
       },

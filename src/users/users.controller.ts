@@ -1,18 +1,22 @@
-import { Controller, UseGuards, Get, Req } from '@nestjs/common'
-import { Request } from 'express'
+import {
+  Controller,
+  UseGuards,
+  Get,
+  Req,
+  // Post,
+  Delete,
+  UseInterceptors,
+  UploadedFile,
+  Patch,
+} from '@nestjs/common'
+import { Express, Request } from 'express'
 import { JwtAuthGuard } from 'src/common/guards'
-// import { Roles } from 'src/common/decorators'
 import { UserModel } from '@/users/schemas'
 import { UsersService } from '@/users/users.service'
-
-// import { VerifyEmailDto } from '@/users/dto'
 import { IUserResponse } from '@/users/interfaces'
-import {
-  ApiBearerAuth,
-  // ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger'
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { FileInterceptor } from '@nestjs/platform-express'
+import { FileValidationPipe } from '@/common/pipes'
 
 @ApiTags('Users')
 @Controller('users')
@@ -47,6 +51,28 @@ export class UsersController {
   @Get('current-user')
   async getCurrentUser(@Req() req: Request): Promise<IUserResponse> {
     return await this.usersService.getCurrentUser(req.user as UserModel)
+  }
+
+  //* UPLOAD AVATAR
+  @UseGuards(JwtAuthGuard)
+  @Patch('avatar')
+  @UseInterceptors(FileInterceptor('avatar'))
+  async uploadAvatar(
+    @Req() req: Request,
+    @UploadedFile(FileValidationPipe) file: Express.Multer.File,
+  ) {
+    const user = req.user as UserModel
+
+    return await this.usersService.uploadUserAvatar({ user, file })
+  }
+
+  //* DELETE AVATAR
+  @UseGuards(JwtAuthGuard)
+  @Delete('avatar')
+  async deleteAvatar(@Req() req: Request) {
+    const user = req.user as UserModel
+
+    return await this.usersService.deleteUserAvatar(user)
   }
 
   // @UseGuards(JwtAuthGuard)
