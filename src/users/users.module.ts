@@ -1,12 +1,10 @@
 import { Module } from '@nestjs/common'
 import { MongooseModule } from '@nestjs/mongoose'
-
 import { UserModel, UserModelSchema } from '@/users/schemas'
-
 import { UsersController } from '@/users/users.controller'
 import { UsersService } from '@/users/users.service'
-import { UploadService } from '@/common/upload-service/upload.service'
 import { ConfigModule } from '@/common/configs/config.module'
+import { UploadModule } from '@/common/upload/upload.module'
 
 @Module({
   imports: [
@@ -14,9 +12,10 @@ import { ConfigModule } from '@/common/configs/config.module'
       { name: UserModel.name, schema: UserModelSchema },
     ]),
     ConfigModule,
+    UploadModule,
   ],
   controllers: [UsersController],
-  providers: [UsersService, UploadService],
+  providers: [UsersService],
   exports: [UsersService],
 })
 export class UsersModule {}

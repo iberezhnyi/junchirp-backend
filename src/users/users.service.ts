@@ -3,7 +3,7 @@ import { Express } from 'express'
 import { Model } from 'mongoose'
 import { InjectModel } from '@nestjs/mongoose'
 import { ConfigService } from '@/common/configs/config.service'
-import { UploadService } from '@/common/upload-service/upload.service'
+import { UploadService } from '@/common/upload/upload.service'
 import { UserModel } from '@/users/schemas'
 import { IUpdateUser, IUser, IUserResponse } from '@/users/interfaces'
 
@@ -42,8 +42,14 @@ export class UsersService {
     user: UserModel
     file: Express.Multer.File
   }): Promise<IUserResponse> {
-    const fileName = await this.uploadService.saveFile(file)
-    user.avatar = fileName
+    const userId = user._id as string
+
+    const avatarUrl = await this.uploadService.saveFile({
+      file,
+      userId,
+    })
+
+    user.avatar = avatarUrl
 
     await user.save()
 
@@ -77,6 +83,21 @@ export class UsersService {
       },
     }
   }
+
+  // async moveAvatar(fileName: string): Promise<string> {
+  //   const tempFilePath = path.join(this.configService.tempFolderPath, fileName)
+  //   const finalFilePath = path.join(
+  //     this.configService.uploadAvatarPath,
+  //     fileName,
+  //   )
+
+  //   if (!fs.existsSync(tempFilePath))
+  //     throw new NotFoundException('File not found in temporary storage')
+
+  //   fs.renameSync(tempFilePath, finalFilePath)
+
+  //   return finalFilePath
+  // }
 
   async updateUser({
     userId,

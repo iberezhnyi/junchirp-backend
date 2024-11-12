@@ -6,11 +6,20 @@ import * as path from 'path'
 @Injectable()
 export class ConfigService {
   private readonly uploadDir = path.join(__dirname, '..', '..', 'uploads')
+  private readonly tempDir = path.join(this.uploadDir, 'temp')
   private readonly avatarsDir = path.join(this.uploadDir, 'avatars')
+  private readonly defaultAvatarPath = path.join(
+    this.avatarsDir,
+    'default',
+    'default-avatar.png',
+  )
 
   constructor(private readonly nestConfigService: NestConfigService) {
     if (!fs.existsSync(this.uploadDir))
       fs.mkdirSync(this.uploadDir, { recursive: true })
+
+    if (!fs.existsSync(this.tempDir))
+      fs.mkdirSync(this.tempDir, { recursive: true })
 
     if (!fs.existsSync(this.avatarsDir))
       fs.mkdirSync(this.avatarsDir, { recursive: true })
@@ -96,6 +105,44 @@ export class ConfigService {
     return dbName
   }
 
+  //* Cloudinary
+  get cloudinaryCloudName(): string {
+    const cloudName = this.nestConfigService.get<string>(
+      'CLOUDINARY_CLOUD_NAME',
+    )
+
+    if (!cloudName)
+      throw new Error(
+        'CLOUDINARY_CLOUD_NAME is not defined in the environment variables',
+      )
+
+    return cloudName
+  }
+
+  get cloudinaryApiKey(): string {
+    const apiKey = this.nestConfigService.get<string>('CLOUDINARY_API_KEY')
+
+    if (!apiKey)
+      throw new Error(
+        'CLOUDINARY_API_KEY is not defined in the environment variables',
+      )
+
+    return apiKey
+  }
+
+  get cloudinaryApiSecret(): string {
+    const apiSecret = this.nestConfigService.get<string>(
+      'CLOUDINARY_API_SECRET',
+    )
+
+    if (!apiSecret)
+      throw new Error(
+        'CLOUDINARY_API_SECRET is not defined in the environment variables',
+      )
+
+    return apiSecret
+  }
+
   //* Email
   get smtpHost(): string {
     const host = this.nestConfigService.get<string>('SMTP_HOST')
@@ -136,6 +183,12 @@ export class ConfigService {
   }
 
   //* Files
+  get tempFolderPath(): string {
+    if (!this.tempDir) throw new Error('Temporary directory is not defined')
+
+    return this.tempDir
+  }
+
   get uploadFolderPath(): string {
     if (!this.uploadDir) throw new Error('Upload directory is not defined')
 
@@ -149,7 +202,7 @@ export class ConfigService {
   }
 
   get defaultAvatarFilePath(): string {
-    return path.join(this.avatarsDir, 'user-avatar.jpg')
+    return this.defaultAvatarPath
     // return path.join(this.avatarsDir, 'user-avatar.png')
   }
 }
