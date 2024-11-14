@@ -6,6 +6,7 @@ import { ConfigService } from '@/common/configs/config.service'
 import { UploadService } from '@/common/upload/upload.service'
 import { UserModel } from '@/users/schemas'
 import { IUpdateUser, IUser, IUserResponse } from '@/users/interfaces'
+import { UPLOAD_CONSTANTS } from '@/common/configs/upload'
 
 @Injectable()
 export class UsersService {
@@ -44,9 +45,16 @@ export class UsersService {
   }): Promise<IUserResponse> {
     const userId = user._id as string
 
+    if (user.avatar !== this.configService.defaultAvatarUrl) {
+      const oldPublicId = this.uploadService.extractPublicId(user.avatar)
+
+      await this.uploadService.deleteFile(oldPublicId)
+    }
+
     const avatarUrl = await this.uploadService.saveFile({
       file,
       userId,
+      folder: UPLOAD_CONSTANTS.AVATAR_UPLOAD_FOLDER,
     })
 
     user.avatar = avatarUrl
@@ -66,10 +74,15 @@ export class UsersService {
 
   //* DELETE AVATAR
   async deleteUserAvatar(user: UserModel): Promise<IUserResponse> {
-    if (user.avatar && user.avatar !== this.configService.defaultAvatarFilePath)
-      await this.uploadService.deleteFile(user.avatar)
+    if (user.avatar === this.configService.defaultAvatarUrl) {
+      throw new NotFoundException('User has no avatar')
+    }
 
-    user.avatar = this.configService.defaultAvatarFilePath
+    const publicId = this.uploadService.extractPublicId(user.avatar)
+
+    await this.uploadService.deleteFile(publicId)
+
+    user.avatar = this.configService.defaultAvatarUrl
 
     await user.save()
 

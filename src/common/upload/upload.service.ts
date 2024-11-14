@@ -1,61 +1,93 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { Express } from 'express'
 import * as fs from 'fs'
 import * as path from 'path'
 import { ConfigService } from '@/common/configs/config.service'
 import { v4 as uuidv4 } from 'uuid'
-import { UploadApiOptions, UploadApiResponse } from 'cloudinary'
+import { UploadApiResponse, UploadApiErrorResponse } from 'cloudinary'
+import { UPLOAD_CONSTANTS, getCloudinaryOptions } from '@/common/configs/upload'
 
-interface CloudinaryService {
-  uploader: {
-    upload(path: string, options?: UploadApiOptions): Promise<UploadApiResponse>
-  }
-}
+type CloudinaryResponse = UploadApiResponse | UploadApiErrorResponse
 
 @Injectable()
 export class UploadService {
+  private readonly tempDir = this.configService.tempFolderPath
+
   constructor(
     private readonly configService: ConfigService,
-    @Inject('Cloudinary') private readonly cloudinaryService: CloudinaryService,
+    @Inject('CLOUDINARY')
+    private readonly cloudinary: CloudinaryResponse,
   ) {}
 
   async saveFile({
     file,
     userId,
+    publicId,
+    folder,
   }: {
-    file: Express.Multer.File
-    userId: string
+    file: Express.Multer.File | string
+    userId?: string
+    publicId?: string
+    folder: string
   }): Promise<string> {
-    const uniqueFileName = `${userId}_${uuidv4()}`
-    const tempDir = this.configService.tempFolderPath
-    const tempFilePath = path.join(tempDir, uniqueFileName)
+    const uniquePublicId = publicId ?? `${userId}_${uuidv4()}`
 
-    fs.writeFileSync(tempFilePath, file.buffer)
+    const tempFilePath = path.join(this.tempDir, uniquePublicId)
+
+    if (typeof file === 'string') {
+      // Если file — это путь к файлу (используется для дефолтного аватара)
+      fs.copyFileSync(file, tempFilePath)
+    } else {
+      // Если file — это объект Express.Multer.File (загружаемый пользователем файл)
+      fs.writeFileSync(tempFilePath, file.buffer)
+    }
+
+    const options = getCloudinaryOptions({ publicId: uniquePublicId, folder })
 
     try {
       // Загружаем файл в Cloudinary
-      const result: UploadApiResponse =
-        await this.cloudinaryService.uploader.upload(tempFilePath, {
-          folder: 'avatars/users',
-          public_id: uniqueFileName,
-        })
+      const result: UploadApiResponse = await this.cloudinary.uploader.upload(
+        tempFilePath,
+        options,
+      )
 
       // Удаляем временный файл после успешной загрузки
-      // fs.unlinkSync(tempFilePath)
+      fs.unlinkSync(tempFilePath)
 
       // Возвращаем URL загруженного файла
       return result.secure_url
     } catch (error) {
       fs.unlinkSync(tempFilePath)
-      throw new Error(`Failed to upload file to Cloudinary: ${error.message}`)
+      throw new Error(`Failed to upload file: ${error.message}`)
     }
   }
 
-  async deleteFile(fileName: string): Promise<void> {
-    const filePath = path.join(this.configService.uploadFolderPath, fileName)
+  async deleteFile(publicId: string): Promise<void> {
+    const publicIdWithPath = UPLOAD_CONSTANTS.AVATAR_UPLOAD_FOLDER + publicId
 
-    if (!fs.existsSync(filePath)) throw new NotFoundException('File not found')
+    try {
+      const result = await this.cloudinary.uploader.destroy(publicIdWithPath)
 
-    fs.unlinkSync(filePath)
+      if (result.result !== 'ok') {
+        throw new Error('Failed to delete file')
+      }
+    } catch (error) {
+      throw new Error(`Failed to delete file: ${error.message}`)
+    }
+  }
+
+  extractPublicId(url: string): string {
+    const parts = url.split('/')
+    return parts[parts.length - 1].split('.')[0]
+  }
+
+  async fileExistsOnCloudinary(publicId: string): Promise<boolean> {
+    try {
+      const result = await this.cloudinary.api.resource(publicId)
+
+      return !!result
+    } catch (error) {
+      return false
+    }
   }
 }

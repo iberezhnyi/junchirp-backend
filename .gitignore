@@ -46,6 +46,8 @@ lerna-debug.log*
 .env.local
 
 # temp directory
+uploads/temp/*
+!uploads/temp/.gitkeep
 .temp
 .tmp
 

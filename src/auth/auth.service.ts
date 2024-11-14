@@ -38,7 +38,7 @@ export class AuthService {
       userName,
       email,
       password: hashedPassword,
-      avatar: this.configService.defaultAvatarFilePath,
+      avatar: this.configService.defaultAvatarUrl,
       confirmCode,
       confirmCodeExpiresAt,
     })

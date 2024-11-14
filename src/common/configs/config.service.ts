@@ -7,12 +7,13 @@ import * as path from 'path'
 export class ConfigService {
   private readonly uploadDir = path.join(__dirname, '..', '..', 'uploads')
   private readonly tempDir = path.join(this.uploadDir, 'temp')
-  private readonly avatarsDir = path.join(this.uploadDir, 'avatars')
-  private readonly defaultAvatarPath = path.join(
-    this.avatarsDir,
-    'default',
-    'default-avatar.png',
+  private readonly _defaultAvatarsPath = path.join(
+    __dirname,
+    '..',
+    '..',
+    'assets/images/avatars',
   )
+  private _defaultAvatarUrl = ''
 
   constructor(private readonly nestConfigService: NestConfigService) {
     if (!fs.existsSync(this.uploadDir))
@@ -20,9 +21,6 @@ export class ConfigService {
 
     if (!fs.existsSync(this.tempDir))
       fs.mkdirSync(this.tempDir, { recursive: true })
-
-    if (!fs.existsSync(this.avatarsDir))
-      fs.mkdirSync(this.avatarsDir, { recursive: true })
   }
 
   //* Common
@@ -41,6 +39,34 @@ export class ConfigService {
       throw new Error('PORT is not defined in the environment variables')
 
     return port
+  }
+
+  //* File system
+  get tempFolderPath(): string {
+    if (!this.tempDir) throw new Error('Temporary directory is not defined')
+
+    return this.tempDir
+  }
+
+  get uploadFolderPath(): string {
+    if (!this.uploadDir) throw new Error('Upload directory is not defined')
+
+    return this.uploadDir
+  }
+
+  get defaultAvatarsPath(): string {
+    if (!this._defaultAvatarsPath)
+      throw new Error('Default avatars directory is not defined')
+
+    return this._defaultAvatarsPath
+  }
+
+  get defaultAvatarUrl(): string {
+    return this._defaultAvatarUrl
+  }
+
+  set defaultAvatarUrl(url: string) {
+    this._defaultAvatarUrl = url
   }
 
   //* JWT
@@ -180,29 +206,5 @@ export class ConfigService {
       )
 
     return password
-  }
-
-  //* Files
-  get tempFolderPath(): string {
-    if (!this.tempDir) throw new Error('Temporary directory is not defined')
-
-    return this.tempDir
-  }
-
-  get uploadFolderPath(): string {
-    if (!this.uploadDir) throw new Error('Upload directory is not defined')
-
-    return this.uploadDir
-  }
-
-  get uploadAvatarPath(): string {
-    if (!this.avatarsDir) throw new Error('Upload directory is not defined')
-
-    return this.avatarsDir
-  }
-
-  get defaultAvatarFilePath(): string {
-    return this.defaultAvatarPath
-    // return path.join(this.avatarsDir, 'user-avatar.png')
   }
 }
