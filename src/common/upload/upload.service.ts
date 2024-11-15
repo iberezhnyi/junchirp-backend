@@ -1,21 +1,20 @@
 import { Inject, Injectable } from '@nestjs/common'
-import { Express } from 'express'
 import * as fs from 'fs'
 import * as path from 'path'
 import { ConfigService } from '@/common/configs/config.service'
 import { v4 as uuidv4 } from 'uuid'
-import { UploadApiResponse, UploadApiErrorResponse } from 'cloudinary'
-import { UPLOAD_CONSTANTS, getCloudinaryOptions } from '@/common/configs/upload'
-
-type CloudinaryResponse = UploadApiResponse | UploadApiErrorResponse
+import { UploadApiResponse } from 'cloudinary'
+import { UPLOAD, getCloudinaryOptions } from '@/common/configs/upload'
+import { CloudinaryResponse, ISaveFileProps } from '@/common/upload/interfaces'
 
 @Injectable()
 export class UploadService {
   private readonly tempDir = this.configService.tempFolderPath
+  private readonly avatarUploadFolder = UPLOAD.AVATAR_UPLOAD_FOLDER
 
   constructor(
     private readonly configService: ConfigService,
-    @Inject('CLOUDINARY')
+    @Inject(UPLOAD.PROVIDERS.CLOUDINARY)
     private readonly cloudinary: CloudinaryResponse,
   ) {}
 
@@ -24,12 +23,7 @@ export class UploadService {
     userId,
     publicId,
     folder,
-  }: {
-    file: Express.Multer.File | string
-    userId?: string
-    publicId?: string
-    folder: string
-  }): Promise<string> {
+  }: ISaveFileProps): Promise<string> {
     const uniquePublicId = publicId ?? `${userId}_${uuidv4()}`
 
     const tempFilePath = path.join(this.tempDir, uniquePublicId)
@@ -63,7 +57,7 @@ export class UploadService {
   }
 
   async deleteFile(publicId: string): Promise<void> {
-    const publicIdWithPath = UPLOAD_CONSTANTS.AVATAR_UPLOAD_FOLDER + publicId
+    const publicIdWithPath = this.avatarUploadFolder + publicId
 
     try {
       const result = await this.cloudinary.uploader.destroy(publicIdWithPath)

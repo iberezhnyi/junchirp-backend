@@ -43,10 +43,10 @@ export class AuthService {
       confirmCodeExpiresAt,
     })
 
-    const userId = user._id as string
+    // const userId = user._id as string
 
     const { access_token, refresh_token } =
-      await this.tokensService.generateAndUpdateTokens(userId)
+      await this.tokensService.generateAndUpdateTokens(user.id)
 
     await this.tokensService.setRefreshTokenCookie({ refresh_token, res })
 
@@ -56,7 +56,7 @@ export class AuthService {
       message: 'Registration successful',
       access_token,
       user: {
-        id: user._id,
+        id: user.id,
         userName: user.userName,
         email: user.email,
         avatar: user.avatar,
@@ -68,10 +68,10 @@ export class AuthService {
 
   //* LOGIN
   async login({ res, user }: IAuthParams): Promise<IAuthResponse> {
-    const userId = user._id as string
+    // const userId = user.id
 
     const { access_token, refresh_token } =
-      await this.tokensService.generateAndUpdateTokens(userId)
+      await this.tokensService.generateAndUpdateTokens(user.id)
 
     await this.tokensService.setRefreshTokenCookie({ refresh_token, res })
 
@@ -79,7 +79,7 @@ export class AuthService {
       message: 'Login successful',
       access_token,
       user: {
-        id: user._id,
+        id: user.id,
         userName: user.userName,
         email: user.email,
         avatar: user.avatar,
@@ -108,10 +108,10 @@ export class AuthService {
 
   //* REFRESH
   async refreshTokens({ user, res }: IAuthParams): Promise<IAuthResponse> {
-    const userId = user._id as string
+    // const userId = user._id as string
 
     const { access_token, refresh_token } =
-      await this.tokensService.generateAndUpdateTokens(userId)
+      await this.tokensService.generateAndUpdateTokens(user.id)
 
     await this.tokensService.setRefreshTokenCookie({ refresh_token, res })
 

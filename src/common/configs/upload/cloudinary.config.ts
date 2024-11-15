@@ -1,10 +1,12 @@
+interface IGetCloudinaryOptionsParams {
+  publicId: string
+  folder: string
+}
+
 export const getCloudinaryOptions = ({
   publicId,
   folder,
-}: {
-  publicId: string
-  folder: string
-}) => ({
+}: IGetCloudinaryOptionsParams) => ({
   folder,
   public_id: publicId,
   use_filename: true,

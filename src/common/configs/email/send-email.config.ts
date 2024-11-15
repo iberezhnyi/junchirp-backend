@@ -3,7 +3,7 @@ import { ConfigService } from '@/common/configs/config.service'
 import { getSmtpConfig } from '@/common/configs/email'
 import Mail from 'nodemailer/lib/mailer'
 
-type ISendEmailDto = {
+type SendEmailDto = {
   configService: ConfigService
   to: string | Mail.Address
   subject: string
@@ -17,7 +17,7 @@ export const sendEmail = async ({
   subject,
   text,
   html,
-}: ISendEmailDto): Promise<void> => {
+}: SendEmailDto): Promise<void> => {
   const smtpConfig = await getSmtpConfig(configService)
   const transporter = nodemailer.createTransport(smtpConfig)
 

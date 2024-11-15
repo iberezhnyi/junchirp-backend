@@ -23,7 +23,7 @@ export class RegisterUserDto {
   @IsString()
   @IsNotEmpty()
   @Length(3, 50, { message: 'Name must be between 3 and 50 characters' })
-  @Matches(/^[a-zA-Zа-яА-Я\s'-]+$/, {
+  @Matches(/^[a-zA-Zа-яА-Я\s'’\-]+$/, {
     message: 'Name can only contain letters, spaces, apostrophes, and hyphens',
   })
   userName: string

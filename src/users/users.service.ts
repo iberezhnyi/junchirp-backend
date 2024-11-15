@@ -5,8 +5,8 @@ import { InjectModel } from '@nestjs/mongoose'
 import { ConfigService } from '@/common/configs/config.service'
 import { UploadService } from '@/common/upload/upload.service'
 import { UserModel } from '@/users/schemas'
-import { IUpdateUser, IUser, IUserResponse } from '@/users/interfaces'
-import { UPLOAD_CONSTANTS } from '@/common/configs/upload'
+import { IUpdateUser, ICreateUser, IUserResponse } from '@/users/interfaces'
+import { UPLOAD } from '@/common/configs/upload'
 
 @Injectable()
 export class UsersService {
@@ -25,7 +25,7 @@ export class UsersService {
     return {
       message: 'Profile fetched successfully',
       user: {
-        id: user._id,
+        id: user.id,
         userName: user.userName,
         email: user.email,
         avatar: user.avatar,
@@ -43,7 +43,7 @@ export class UsersService {
     user: UserModel
     file: Express.Multer.File
   }): Promise<IUserResponse> {
-    const userId = user._id as string
+    // const userId = user._id as string
 
     if (user.avatar !== this.configService.defaultAvatarUrl) {
       const oldPublicId = this.uploadService.extractPublicId(user.avatar)
@@ -53,8 +53,8 @@ export class UsersService {
 
     const avatarUrl = await this.uploadService.saveFile({
       file,
-      userId,
-      folder: UPLOAD_CONSTANTS.AVATAR_UPLOAD_FOLDER,
+      userId: user.id,
+      folder: UPLOAD.AVATAR_UPLOAD_FOLDER,
     })
 
     user.avatar = avatarUrl
@@ -64,7 +64,7 @@ export class UsersService {
     return {
       message: 'Avatar uploaded successfully',
       user: {
-        id: user._id,
+        id: user.id,
         userName: user.userName,
         email: user.email,
         avatar: user.avatar,
@@ -89,7 +89,7 @@ export class UsersService {
     return {
       message: 'Avatar successfully deleted',
       user: {
-        id: user._id,
+        id: user.id,
         userName: user.userName,
         email: user.email,
         avatar: user.avatar,
@@ -127,8 +127,10 @@ export class UsersService {
     return {
       message: 'Update successful',
       user: {
-        id: updatedUser._id,
+        id: updatedUser.id,
+        userName: updatedUser.userName,
         email: updatedUser.email,
+        avatar: updatedUser.avatar,
         // subscription: updatedUser.subscription,
         // role: updatedUser.roles[0],
       },
@@ -144,8 +146,10 @@ export class UsersService {
     return {
       message: `User ${user.email} deleted successfully`,
       user: {
-        id: user._id,
+        id: user.id,
+        userName: user.userName,
         email: user.email,
+        avatar: user.avatar,
         // subscription: user.subscription,
         // role: user.roles[0],
       },
@@ -153,7 +157,7 @@ export class UsersService {
   }
 
   // * Internal methods
-  async createUser(newUser: IUser): Promise<UserModel> {
+  async createUser(newUser: ICreateUser): Promise<UserModel> {
     const user = await this.userModel.create(newUser)
 
     return user

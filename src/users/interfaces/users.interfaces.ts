@@ -1,7 +1,11 @@
 import { UpdateUserDto } from '@/users/dto'
 import { UserModel } from '@/users/schemas'
 
-export interface IUser extends Partial<UserModel> {
+export interface ICreateUser extends Partial<UserModel> {}
+
+export interface IUser
+  extends Pick<UserModel, 'userName' | 'email' | 'avatar'> {
+  id: string
   // role: string
 }
 
