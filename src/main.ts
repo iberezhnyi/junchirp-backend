@@ -27,7 +27,13 @@ async function bootstrap() {
   app.enableCors(corsOptions)
 
   // Validation Pipe
-  app.useGlobalPipes(new ValidationPipe())
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  )
 
   // Class-validator
   useContainer(app.select(AppModule), { fallbackOnErrors: true })

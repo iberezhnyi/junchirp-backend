@@ -1,18 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { Transform } from 'class-transformer'
 import { IsEmail, IsNotEmpty, IsString, Length, Matches } from 'class-validator'
 
 export class LoginUserDto {
-  @ApiProperty({
-    example: 'Password123!',
-    description:
-      'The password for the user, must be between 8 and 20 characters and include uppercase, lowercase, numbers, and special characters.',
-    minLength: 8,
-    maxLength: 20,
-  })
-  @IsString()
-  @IsNotEmpty()
-  password: string
-
+  //* EMAIL
   @ApiProperty({
     example: 'johndoe@example.com',
     description: 'The email of the user. Must be a valid email format.',
@@ -29,4 +20,17 @@ export class LoginUserDto {
     },
   )
   email: string
+
+  //* PASSWORD
+  @ApiProperty({
+    example: 'Password123!',
+    description:
+      'The password for the user, must be between 8 and 20 characters and include uppercase, lowercase, numbers, and special characters.',
+    minLength: 8,
+    maxLength: 20,
+  })
+  @IsString()
+  @IsNotEmpty()
+  @Transform(({ value }) => value.trim())
+  password: string
 }

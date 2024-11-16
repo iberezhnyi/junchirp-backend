@@ -11,7 +11,11 @@ import {
 import { AuthService } from '@/auth/auth.service'
 import { AuthController } from '@/auth/auth.controller'
 import { NormalizeEmailMiddleware } from '@/common/middlewares'
-import { IsEmailUnique } from '@/common/validators'
+// import {
+// IsEmailUniqueValidator,
+// NotContainUserNameValidator,
+// NotWeakPasswordValidator,
+// } from '@/common/validators'
 import { EmailModule } from '@/common/email/email.module'
 
 @Module({
@@ -27,7 +31,9 @@ import { EmailModule } from '@/common/email/email.module'
     LocalStrategy,
     JwtStrategy,
     RefreshJwtStrategy,
-    IsEmailUnique,
+    // IsEmailUniqueValidator,
+    // NotWeakPasswordValidator,
+    // NotContainUserNameValidator,
   ],
   controllers: [AuthController],
 })

@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common'
@@ -29,6 +30,11 @@ export class AuthService {
     res,
   }: IRegisterUser): Promise<IAuthResponse> {
     const { email, password, userName } = registerUserDto
+
+    const existingUser = await this.usersService.findOneByEmail(email)
+    if (existingUser) {
+      throw new ConflictException(`Email ${email} already exists`)
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10)
     const confirmCode = getConfirmCode()
