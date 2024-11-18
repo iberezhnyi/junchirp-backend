@@ -22,13 +22,17 @@ export class DefaultAvatarService implements OnModuleInit {
     const defaultAvatarPublicIdWithPath =
       this.defaultAvatarFolder + defaultAvatarPublicId
 
-    const exists = await this.uploadService.fileExistsOnCloudinary(
+    const { exists, url } = await this.uploadService.fileExistsOnCloudinary(
       defaultAvatarPublicIdWithPath,
     )
 
     console.log('Checking defaultAvatar exists :>> ', exists)
 
-    if (exists) return
+    if (exists) {
+      this.configService.defaultAvatarUrl = url as string
+
+      return
+    }
 
     console.log('Creating defaultAvatar ...')
 

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common'
 import { MongooseModule } from '@nestjs/mongoose'
+// import { NestjsFormDataModule } from 'nestjs-form-data'
 import { UserModel, UserModelSchema } from '@/users/schemas'
 import { UsersController } from '@/users/users.controller'
 import { UsersService } from '@/users/users.service'
@@ -12,6 +13,7 @@ import { UploadModule } from '@/common/upload/upload.module'
       { name: UserModel.name, schema: UserModelSchema },
     ]),
     ConfigModule,
+    // NestjsFormDataModule,
     UploadModule,
   ],
   controllers: [UsersController],

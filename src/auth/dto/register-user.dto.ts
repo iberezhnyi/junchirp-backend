@@ -10,8 +10,7 @@ import {
   Validate,
 } from 'class-validator'
 import {
-  NoRuDomainValidator,
-  // IsEmailUniqueValidator,
+  NotRuDomainValidator,
   NotContainUserNameValidator,
   NotWeakPasswordValidator,
 } from '@/common/validators'
@@ -30,9 +29,9 @@ export class RegisterUserDto {
   @IsString()
   @IsNotEmpty()
   @Length(3, 50, { message: 'Name must be between 3 and 50 characters' })
-  @Matches(/^(?=.{3,50}$)([a-zA-Zа-яА-Я]+(?:[ \-'][a-zA-Zа-яА-Я]+)*)$/u, {
+  @Matches(/^[a-zA-Zа-яА-ЯёЁіІїЇєЄґҐ']+([ \-'][a-zA-Zа-яА-ЯёЁіІїЇєЄґҐ']+)*$/u, {
     message:
-      'Name must be valid and meet the criteria: 3-50 characters, start-end with a letter, and only include letters, spaces, hyphens, and apostrophes between words',
+      'Name must be valid and meet the criteria: 3-50 characters, start-end with a letter, and only include letters (a-z, A-Z, а-я, А-Я), spaces, hyphens, and apostrophes between words',
   })
   @Transform(({ value }) => normalizeText(value))
   userName: string
@@ -49,13 +48,12 @@ export class RegisterUserDto {
   @IsNotEmpty()
   @Length(7, 254, { message: 'Email must be between 7 and 254 characters' })
   @Matches(
-    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*(\.[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)*\.[a-zA-Z]{2,}$/,
+    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*(\.[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)*\.[a-zA-Z]{2,4}$/,
     {
       message: 'Email format is invalid',
     },
   )
-  // @Validate(IsEmailUniqueValidator)
-  @Validate(NoRuDomainValidator)
+  @Validate(NotRuDomainValidator)
   email: string
 
   //* PASSWORD

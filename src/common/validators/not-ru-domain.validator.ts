@@ -5,7 +5,7 @@ import {
 import { BadRequestException } from '@nestjs/common'
 
 @ValidatorConstraint({ name: 'noRuDomain', async: false })
-export class NoRuDomainValidator implements ValidatorConstraintInterface {
+export class NotRuDomainValidator implements ValidatorConstraintInterface {
   validate(email: string): boolean {
     const ruDomain = email.toLowerCase().endsWith('.ru')
 

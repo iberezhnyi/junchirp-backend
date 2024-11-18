@@ -1,5 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
 import { MongooseModule } from '@nestjs/mongoose'
+// import { NestjsFormDataModule } from 'nestjs-form-data'
 import { getMongoConfig } from '@/common/configs/mongo'
 import { ConfigModule } from '@/common/configs/config.module'
 import { ConfigService } from '@/common/configs/config.service'
@@ -17,6 +18,7 @@ import { UsersModule } from '@/users/users.module'
       inject: [ConfigService],
       useFactory: getMongoConfig,
     }),
+    // NestjsFormDataModule,
     TokensModule,
     EmailModule,
     AuthModule,

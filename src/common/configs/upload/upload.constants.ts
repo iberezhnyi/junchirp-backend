@@ -7,6 +7,14 @@ export const UPLOAD = {
   DEFAULT_AVATAR_NAME: 'default_user_avatar.png',
 
   AVATAR_UPLOAD_FOLDER: 'avatars/users/',
-  AVATAR_MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
-  AVATAR_ALLOWED_FORMATS: ['image/jpg', 'image/jpeg', 'image/png'],
+  AVATAR_MAX_FILE_SIZE: 2 * 1024 * 1024, // 2MB
+  AVATAR_ALLOWED_FORMATS: [
+    'image/jpg',
+    'image/jpeg',
+    'image/png',
+    'image/gif',
+    'image/bmp',
+    'image/tiff',
+    'image/webp',
+  ],
 }

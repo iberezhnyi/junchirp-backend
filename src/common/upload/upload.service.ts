@@ -75,13 +75,15 @@ export class UploadService {
     return parts[parts.length - 1].split('.')[0]
   }
 
-  async fileExistsOnCloudinary(publicId: string): Promise<boolean> {
+  async fileExistsOnCloudinary(
+    publicId: string,
+  ): Promise<{ exists: boolean; url?: string }> {
     try {
       const result = await this.cloudinary.api.resource(publicId)
 
-      return !!result
+      return { exists: true, url: result.secure_url }
     } catch (error) {
-      return false
+      return { exists: false }
     }
   }
 }

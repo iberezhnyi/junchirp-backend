@@ -46,8 +46,13 @@ async function bootstrap() {
     .setTitle('Junchirp Backend')
     .setDescription('Junchirp API documentation')
     .setVersion('1.0')
-    .addServer('https://junchirp-backend.onrender.com')
+    // .addServer('https://junchirp-backend.onrender.com')
     // .addServer('https://junchirp-backend.onrender.com', 'Production server')
+    .addServer(
+      isDevelopment
+        ? 'http://localhost:3000'
+        : 'https://junchirp-backend.onrender.com',
+    )
     .addBearerAuth()
     .build()
 
