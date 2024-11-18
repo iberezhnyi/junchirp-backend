@@ -18,17 +18,17 @@ export class UserModel extends Document {
 
   @Prop({
     type: [String],
-    enum: ['user', 'admin'],
-    default: ['user'],
+    enum: ['Junior', 'Mentor', 'Investor', 'Partner'],
+    default: ['Junior', 'Investor'],
   })
   roles: string[]
 
-  @Prop({
-    type: String,
-    enum: ['starter', 'pro', 'business'],
-    default: 'starter',
-  })
-  subscription: string
+  // @Prop({
+  //   type: String,
+  //   enum: ['starter', 'pro', 'business'],
+  //   default: 'starter',
+  // })
+  // subscription: string
 
   @Prop({
     required: [true, 'Password is required'],

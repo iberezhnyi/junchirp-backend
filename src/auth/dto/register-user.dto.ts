@@ -1,9 +1,9 @@
 import { Transform } from 'class-transformer'
 import {
   IsEmail,
-  IsEnum,
+  // IsEnum,
   IsNotEmpty,
-  IsOptional,
+  // IsOptional,
   IsString,
   Length,
   Matches,
@@ -87,15 +87,13 @@ export class RegisterUserDto {
   @Validate(NotContainUserNameValidator)
   password: string
 
-  // @ApiProperty({
-  //   example: 'starter',
-  //   description:
-  //     'Subscription type of the user, optional, defaults to "starter".',
-  //   enum: ['starter', 'pro', 'business'],
-  //   required: false,
-  // })
-  @IsEnum(['starter', 'pro', 'business'])
-  @IsOptional()
-  @Transform(({ value }) => value || 'starter')
-  subscription?: string
+  // //* ROLE
+  // @IsEnum(['Junior', 'Mentor', 'Investor', 'Partner'])
+  // @Transform(({ value }) => value || 'Junior')
+  // roles: string[]
+
+  // @IsEnum(['starter', 'pro', 'business'])
+  // @IsOptional()
+  // @Transform(({ value }) => value || 'starter')
+  // subscription?: string
 }

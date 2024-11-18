@@ -29,8 +29,7 @@ export class UsersService {
         userName: user.userName,
         email: user.email,
         avatar: user.avatar,
-        // subscription: user.subscription,
-        // role: user.roles[0],
+        roles: user.roles,
       },
     }
   }
@@ -68,6 +67,7 @@ export class UsersService {
         userName: user.userName,
         email: user.email,
         avatar: user.avatar,
+        roles: user.roles,
       },
     }
   }
@@ -93,6 +93,7 @@ export class UsersService {
         userName: user.userName,
         email: user.email,
         avatar: user.avatar,
+        roles: user.roles,
       },
     }
   }
@@ -131,6 +132,7 @@ export class UsersService {
         userName: updatedUser.userName,
         email: updatedUser.email,
         avatar: updatedUser.avatar,
+        roles: updatedUser.roles,
         // subscription: updatedUser.subscription,
         // role: updatedUser.roles[0],
       },
@@ -150,6 +152,7 @@ export class UsersService {
         userName: user.userName,
         email: user.email,
         avatar: user.avatar,
+        roles: user.roles,
         // subscription: user.subscription,
         // role: user.roles[0],
       },

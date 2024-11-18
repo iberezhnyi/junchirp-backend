@@ -4,9 +4,8 @@ import { UserModel } from '@/users/schemas'
 export interface ICreateUser extends Partial<UserModel> {}
 
 export interface IUser
-  extends Pick<UserModel, 'userName' | 'email' | 'avatar'> {
+  extends Pick<UserModel, 'userName' | 'email' | 'avatar' | 'roles'> {
   id: string
-  // role: string
 }
 
 export interface IUpdateUser {
