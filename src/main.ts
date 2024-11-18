@@ -19,12 +19,18 @@ async function bootstrap() {
   app.use(cookieParser())
 
   // Cors
-  const corsOptions: CorsOptions = {
+  const corsOptionsProduction: CorsOptions = {
+    origin: ['https://junchirp-app.vercel.app'],
+    // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  }
+
+  const corsOptionsDevelopment: CorsOptions = {
     origin: ['http://localhost:3000'],
     // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   }
-  app.enableCors(corsOptions)
+  app.enableCors(isDevelopment ? corsOptionsDevelopment : corsOptionsProduction)
 
   // Validation Pipe
   app.useGlobalPipes(
