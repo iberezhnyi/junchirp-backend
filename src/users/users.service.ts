@@ -187,9 +187,12 @@ export class UsersService {
     email: string,
     updateFields: any,
   ): Promise<any> {
-    const user = await this.userModel
-      .findOneAndUpdate({ email }, updateFields)
-      .exec()
+    const user = await this.userModel.findOneAndUpdate(
+      { email },
+      updateFields,
+      { new: true },
+    )
+    // .exec()
 
     if (!user) {
       throw new NotFoundException(`User with email: ${email} not found`)

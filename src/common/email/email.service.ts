@@ -1,5 +1,6 @@
 import { UsersService } from '@/users/users.service'
 import { BadRequestException, Injectable } from '@nestjs/common'
+import { format } from 'date-fns'
 import { ConfigService } from '@/common/configs/config.service'
 import { sendEmail } from '@/common/configs/email'
 import { UserModel } from '@/users/schemas'
@@ -16,9 +17,11 @@ export class EmailService {
   async sendConfirmCode({
     email,
     confirmCode,
+    confirmCodeExpiresAt,
   }: {
     email: string
     confirmCode: string
+    confirmCodeExpiresAt: Date
   }): Promise<void> {
     // const confirmCode = getConfirmCode()
     // const confirmExpiresAtDate = getConfirmExpiresAtDate()
@@ -35,12 +38,19 @@ export class EmailService {
     // if (user.confirmAttempts >= 3)
     //   throw new Error('Exceeded the number of code request attempts.')
 
+    const formattedExpiresAt = format(
+      confirmCodeExpiresAt,
+      'eee MMM dd yyyy HH:mm',
+    )
+
     await sendEmail({
       configService: this.configService,
       to: email,
       subject: 'Confirmation code',
-      text: `Your confirmation code: ${confirmCode}`,
-      html: `<p>Your confirmation code: ${confirmCode}</p>`,
+      text: `Your confirmation code: ${confirmCode}.
+      Expires At: ${formattedExpiresAt}`,
+      html: `<p>Your confirmation code: ${confirmCode}</p>
+      <p>Expires At: ${formattedExpiresAt}</p>`,
     })
 
     // return confirmCode
@@ -72,7 +82,7 @@ export class EmailService {
   private async resetConfirmCode(email: string) {
     await this.usersService.findOneByEmailAndUpdate(email, {
       confirmCode: null,
-      confirmCodeExpiresAt: null,
+      // confirmCodeExpiresAt: null,
       confirmAttempts: 0,
     })
   }
@@ -99,6 +109,7 @@ export class EmailService {
       confirmCode: null,
       confirmCodeExpiresAt: null,
       confirmAttempts: 0,
+      resendCodeAttempts: 0,
     })
   }
 }

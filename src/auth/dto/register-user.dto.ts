@@ -29,10 +29,14 @@ export class RegisterUserDto {
   @IsString()
   @IsNotEmpty()
   @Length(3, 50, { message: 'Name must be between 3 and 50 characters' })
-  @Matches(/^[a-zA-Zа-яА-ЯёЁіІїЇєЄґҐ']+([ \-'][a-zA-Zа-яА-ЯёЁіІїЇєЄґҐ']+)*$/u, {
-    message:
-      'Name must be valid and meet the criteria: 3-50 characters, start-end with a letter, and only include letters (a-z, A-Z, а-я, А-Я), spaces, hyphens, and apostrophes between words',
-  })
+  // @Matches(/^[a-zA-Zа-яА-ЯёЁіІїЇєЄґҐ']+([ \-'][a-zA-Zа-яА-ЯёЁіІїЇєЄґҐ']+)*$/u, {
+  @Matches(
+    /^(?=(?:.*[a-zA-Zа-яА-ЯёЁіІїЇєЄґҐ]){3})[a-zA-Zа-яА-ЯёЁіІїЇєЄґҐ' \-]+$/u,
+    {
+      message:
+        'Name must be valid and meet the criteria: 3-50 characters, start-end with a letter, and only include letters (a-z, A-Z, а-я, А-Я), spaces, hyphens, and apostrophes between words',
+    },
+  )
   @Transform(({ value }) => normalizeText(value))
   userName: string
 

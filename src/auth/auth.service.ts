@@ -40,6 +40,12 @@ export class AuthService {
     const confirmCode = getConfirmCode()
     const confirmCodeExpiresAt = getConfirmExpiresAtDate()
 
+    await this.emailService.sendConfirmCode({
+      email,
+      confirmCode,
+      confirmCodeExpiresAt,
+    })
+
     const user = await this.usersService.createUser({
       userName,
       email,
@@ -55,8 +61,6 @@ export class AuthService {
       await this.tokensService.generateAndUpdateTokens(user.id)
 
     await this.tokensService.setRefreshTokenCookie({ refresh_token, res })
-
-    // await this.emailService.sendConfirmCode({ email, confirmCode })
 
     return {
       message: 'Registration successful',
@@ -148,16 +152,33 @@ export class AuthService {
     if (user.isConfirmed)
       throw new BadRequestException('Account already confirmed.')
 
+    const hasActiveCode =
+      user.confirmCodeExpiresAt && user.confirmCodeExpiresAt > new Date()
+    const exceededAttempts = user.resendCodeAttempts >= 3
+
+    if (hasActiveCode && exceededAttempts) {
+      throw new BadRequestException(
+        'Too many resend attempts. Wait until the current code expires.',
+      )
+    }
+
+    const resendCodeAttempts = hasActiveCode ? user.resendCodeAttempts + 1 : 1
+
     const confirmCode = getConfirmCode()
-    const confirmExpiresAtDate = getConfirmExpiresAtDate()
+    const confirmCodeExpiresAt = getConfirmExpiresAtDate()
 
     await this.usersService.findOneByEmailAndUpdate(email, {
       confirmCode: confirmCode,
-      confirmCodeExpiresAt: confirmExpiresAtDate,
-      // $inc: { confirmAttempts: 1 },
+      confirmCodeExpiresAt,
+      resendCodeAttempts,
+      // $inc: { resendCodeAttempts: 1 },
     })
 
-    // await this.emailService.sendConfirmCode({ email, confirmCode })
+    await this.emailService.sendConfirmCode({
+      email,
+      confirmCode,
+      confirmCodeExpiresAt,
+    })
 
     return { message: 'Confirmation code sent successfully' }
   }

@@ -76,6 +76,12 @@ export class UserModel extends Document {
     default: null,
   })
   confirmCodeExpiresAt: Date | null
+
+  @Prop({
+    type: Number,
+    default: 0,
+  })
+  resendCodeAttempts: number
 }
 
 export const UserModelSchema = SchemaFactory.createForClass(UserModel)

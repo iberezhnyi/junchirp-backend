@@ -207,4 +207,26 @@ export class ConfigService {
 
     return password
   }
+
+  get smtpSenderEmail(): string {
+    const senderEmail = this.nestConfigService.get<string>('SMTP_SENDER_EMAIL')
+
+    if (!senderEmail)
+      throw new Error(
+        'SMTP_SENDER_EMAIL is not defined in the environment variables',
+      )
+
+    return senderEmail
+  }
+
+  get smtpSenderName(): string {
+    const senderName = this.nestConfigService.get<string>('SMTP_SENDER_NAME')
+
+    if (!senderName)
+      throw new Error(
+        'SMTP_SENDER_NAME is not defined in the environment variables',
+      )
+
+    return senderName
+  }
 }

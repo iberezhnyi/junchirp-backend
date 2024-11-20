@@ -22,12 +22,20 @@ export const sendEmail = async ({
   const transporter = nodemailer.createTransport(smtpConfig)
 
   const mailOptions = {
-    from: configService.smtpUser,
+    from: {
+      address: configService.smtpSenderEmail,
+      name: configService.smtpSenderName,
+    },
     to,
     subject,
     text,
     html,
   }
 
+  // console.log('mailOptions :>> ', mailOptions)
+
   await transporter.sendMail(mailOptions)
+  // const result = await transporter.sendMail(mailOptions)
+
+  // console.log('result :>> ', result)
 }
