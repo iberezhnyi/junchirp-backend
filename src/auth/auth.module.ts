@@ -41,6 +41,11 @@ export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(NormalizeEmailMiddleware)
-      .forRoutes('auth/login', 'auth/register')
+      .forRoutes(
+        'auth/login',
+        'auth/register',
+        'auth/verify',
+        'auth/request-confirm-code',
+      )
   }
 }

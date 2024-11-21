@@ -20,7 +20,7 @@ import { UserModel } from '@/users/schemas'
 import {
   LoginUserDto,
   RegisterUserDto,
-  ResendConfirmCodeDto,
+  RequestConfirmCodeDto,
   VerifyEmailDto,
 } from '@/auth/dto'
 import { IAuthResponse } from '@/auth/interfaces'
@@ -204,7 +204,7 @@ export class AuthController {
     return await this.authService.verifyEmail(verifyEmailDto)
   }
 
-  //* RESEND-CONFIRM-CODE
+  //* REQUEST-CONFIRM-CODE
   @ApiResponse({
     status: 200,
     description: 'Confirmation code sent successfully. Returns message.',
@@ -218,10 +218,10 @@ export class AuthController {
     status: 404,
     description: 'User not found',
   })
-  @Post('resend-confirm-code')
-  async resendConfirmCode(
-    @Body() resendConfirmCodeDto: ResendConfirmCodeDto,
+  @Post('request-confirm-code')
+  async requestConfirmCode(
+    @Body() requestConfirmCodeDto: RequestConfirmCodeDto,
   ): Promise<IAuthResponse> {
-    return await this.authService.resendConfirmCode(resendConfirmCodeDto)
+    return await this.authService.requestConfirmCode(requestConfirmCodeDto)
   }
 }

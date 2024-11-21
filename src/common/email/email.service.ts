@@ -20,7 +20,7 @@ export class EmailService {
     confirmCodeExpiresAt,
   }: {
     email: string
-    confirmCode: string
+    confirmCode: number
     confirmCodeExpiresAt: Date
   }): Promise<void> {
     // const confirmCode = getConfirmCode()
@@ -56,7 +56,7 @@ export class EmailService {
     // return confirmCode
   }
 
-  async verifyCode(email: string, code: string) {
+  async verifyCode(email: string, code: number) {
     const user = await this.usersService.findOneByEmail(email)
 
     if (!user) throw new BadRequestException('User not found.')
@@ -109,7 +109,7 @@ export class EmailService {
       confirmCode: null,
       confirmCodeExpiresAt: null,
       confirmAttempts: 0,
-      resendCodeAttempts: 0,
+      requestCodeAttempts: 0,
     })
   }
 }

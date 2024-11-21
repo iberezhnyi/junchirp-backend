@@ -1,4 +1,5 @@
 import * as cookieParser from 'cookie-parser'
+import * as basicAuth from 'express-basic-auth'
 import { NestFactory } from '@nestjs/core'
 import { ValidationPipe } from '@nestjs/common'
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface'
@@ -48,6 +49,14 @@ async function bootstrap() {
   app.setGlobalPrefix('api')
 
   // Swagger
+  app.use(
+    '/api/docs',
+    basicAuth({
+      users: { [configService.swaggerUser]: configService.swaggerPassword },
+      challenge: true,
+    }),
+  )
+
   const config = new DocumentBuilder()
     .setTitle('Junchirp Backend')
     .setDescription('Junchirp API documentation')

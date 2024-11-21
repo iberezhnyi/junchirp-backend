@@ -69,7 +69,7 @@ export class UserModel extends Document {
     type: String,
     default: null,
   })
-  confirmCode: string | null
+  confirmCode: number | null
 
   @Prop({
     type: Date,
@@ -81,7 +81,7 @@ export class UserModel extends Document {
     type: Number,
     default: 0,
   })
-  resendCodeAttempts: number
+  requestCodeAttempts: number
 }
 
 export const UserModelSchema = SchemaFactory.createForClass(UserModel)

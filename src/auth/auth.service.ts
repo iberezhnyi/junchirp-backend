@@ -12,7 +12,7 @@ import { UsersService } from '@/users/users.service'
 import { IRegisterUser } from '@/auth/interfaces'
 import { getConfirmCode, getConfirmExpiresAtDate } from '@/common/helpers'
 // import { IUserResponse } from '@/users/interfaces'
-import { ResendConfirmCodeDto, VerifyEmailDto } from '@/auth/dto'
+import { RequestConfirmCodeDto, VerifyEmailDto } from '@/auth/dto'
 import { EmailService } from '@/common/email/email.service'
 
 @Injectable()
@@ -142,9 +142,9 @@ export class AuthService {
     return { message: 'Account successfully verified' }
   }
 
-  //* RESEND-CONFIRM-CODE
-  async resendConfirmCode(resendConfirmCodeDto: ResendConfirmCodeDto) {
-    const { email } = resendConfirmCodeDto
+  //* REQUEST-CONFIRM-CODE
+  async requestConfirmCode(requestConfirmCodeDto: RequestConfirmCodeDto) {
+    const { email } = requestConfirmCodeDto
 
     const user = await this.usersService.findOneByEmail(email)
 
@@ -154,15 +154,15 @@ export class AuthService {
 
     const hasActiveCode =
       user.confirmCodeExpiresAt && user.confirmCodeExpiresAt > new Date()
-    const exceededAttempts = user.resendCodeAttempts >= 3
+    const exceededAttempts = user.requestCodeAttempts >= 3
 
     if (hasActiveCode && exceededAttempts) {
       throw new BadRequestException(
-        'Too many resend attempts. Wait until the current code expires.',
+        'Too many request attempts. Wait until the current code expires.',
       )
     }
 
-    const resendCodeAttempts = hasActiveCode ? user.resendCodeAttempts + 1 : 1
+    const requestCodeAttempts = hasActiveCode ? user.requestCodeAttempts + 1 : 1
 
     const confirmCode = getConfirmCode()
     const confirmCodeExpiresAt = getConfirmExpiresAtDate()
@@ -170,8 +170,8 @@ export class AuthService {
     await this.usersService.findOneByEmailAndUpdate(email, {
       confirmCode: confirmCode,
       confirmCodeExpiresAt,
-      resendCodeAttempts,
-      // $inc: { resendCodeAttempts: 1 },
+      requestCodeAttempts,
+      // $inc: { requestCodeAttempts: 1 },
     })
 
     await this.emailService.sendConfirmCode({

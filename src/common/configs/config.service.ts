@@ -229,4 +229,28 @@ export class ConfigService {
 
     return senderName
   }
+
+  //* Swagger
+
+  get swaggerUser(): string {
+    const user = this.nestConfigService.get<string>('SWAGGER_USER')
+
+    if (!user)
+      throw new Error(
+        'SWAGGER_USER is not defined in the environment variables',
+      )
+
+    return user
+  }
+
+  get swaggerPassword(): string {
+    const password = this.nestConfigService.get<string>('SWAGGER_PASSWORD')
+
+    if (!password)
+      throw new Error(
+        'SWAGGER_PASSWORD is not defined in the environment variables',
+      )
+
+    return password
+  }
 }
