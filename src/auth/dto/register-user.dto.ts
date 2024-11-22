@@ -16,16 +16,18 @@ import {
 } from '@/common/validators'
 import { ApiProperty } from '@nestjs/swagger'
 import { normalizeText } from '@/common/helpers'
+import { RegisterUserDocs } from '@/auth/documentation'
 
 export class RegisterUserDto {
   //* USER NAME
-  @ApiProperty({
-    example: 'John Doe',
-    description:
-      'The name of the user, must be valid and meet the criteria: 3-50 characters, start-end with a letter, and only include letters, spaces, hyphens, and apostrophes between words',
-    minLength: 3,
-    maxLength: 50,
-  })
+  // @ApiProperty({
+  //   example: 'John Doe',
+  //   description:
+  //     'The name of the user, must be valid and meet the criteria: 3-50 characters, start-end with a letter, and only include letters, spaces, hyphens, and apostrophes between words',
+  //   minLength: 3,
+  //   maxLength: 50,
+  // })
+  @ApiProperty(RegisterUserDocs.userName)
   @IsString()
   @IsNotEmpty()
   @Length(3, 50, { message: 'Name must be between 3 and 50 characters' })

@@ -18,19 +18,14 @@ import {
 import { AuthService } from '@/auth/auth.service'
 import { UserModel } from '@/users/schemas'
 import {
-  LoginUserDto,
   RegisterUserDto,
   RequestConfirmCodeDto,
   VerifyEmailDto,
 } from '@/auth/dto'
 import { IAuthResponse } from '@/auth/interfaces'
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger'
+import { ApiTags } from '@nestjs/swagger'
+import { ApiRouteDocumentation } from '@/common/decorators'
+import { AuthDocs } from '@/auth/documentation'
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -38,36 +33,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   //* REGISTER
-  @ApiResponse({
-    status: 201,
-    description:
-      'Registration successful. Returns message, access token and user data.',
-    schema: {
-      example: {
-        message: 'Registration successful',
-        access_token: 'eyJhbGc...',
-        user: {
-          id: '605c3c65e2e45b3b3c234d3d',
-          userName: 'John Doe',
-          email: 'johndoe@example.com',
-          avatar: 'https://example.com/uploads/default-avatar.jpg',
-          roles: ['Junior', 'Investor'],
-        },
-      },
-    },
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Bad request with validation errors.',
-  })
-  @ApiResponse({
-    status: 409,
-    description: 'Email already exists.',
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error.',
-  })
+  @ApiRouteDocumentation(AuthDocs.register)
   @Post('register')
   async register(
     @Body() registerUserDto: RegisterUserDto,
@@ -77,37 +43,7 @@ export class AuthController {
   }
 
   //* LOGIN
-  @ApiBody({ type: LoginUserDto })
-  @ApiResponse({
-    status: 200,
-    description:
-      'Login successful. Returns message, access token and user data.',
-    schema: {
-      example: {
-        message: 'Login successful',
-        access_token: 'eyJhbGc...',
-        user: {
-          id: '605c3c65e2e45b3b3c234d3d',
-          userName: 'John Doe',
-          email: 'johndoe@example.com',
-          avatar: 'https://example.com/uploads/default-avatar.jpg',
-          roles: ['Junior', 'Investor'],
-        },
-      },
-    },
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Bad request with validation errors.',
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized. Invalid email or password.',
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error.',
-  })
+  @ApiRouteDocumentation(AuthDocs.login)
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('login')
@@ -121,24 +57,7 @@ export class AuthController {
   }
 
   //* LOGOUT
-  @ApiBearerAuth()
-  @ApiResponse({
-    status: 200,
-    description: 'Logout successful. Returns message.',
-    schema: {
-      example: {
-        message: 'Logout successful',
-      },
-    },
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized.',
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error.',
-  })
+  @ApiRouteDocumentation(AuthDocs.logout)
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('logout')
@@ -152,26 +71,7 @@ export class AuthController {
   }
 
   //* REFRESH
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Refresh access token using cookie' })
-  @ApiResponse({
-    status: 200,
-    description: 'Refresh successful. Returns message and access token.',
-    schema: {
-      example: {
-        message: 'Refresh successful',
-        access_token: 'eyJhbGc...',
-      },
-    },
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized.',
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error.',
-  })
+  @ApiRouteDocumentation(AuthDocs.refresh)
   @UseGuards(RefreshJwtGuard)
   @Get('refresh')
   async refreshTokens(
@@ -184,19 +84,7 @@ export class AuthController {
   }
 
   //* VERIFY
-  @ApiResponse({
-    status: 200,
-    description: 'Account successfully verified. Returns message.',
-    schema: { example: { message: 'Account successfully verified' } },
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Invalid or expired code, or account already confirmed',
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error.',
-  })
+  @ApiRouteDocumentation(AuthDocs.verify)
   @Post('verify')
   async verifyEmail(
     @Body() verifyEmailDto: VerifyEmailDto,
@@ -205,19 +93,7 @@ export class AuthController {
   }
 
   //* REQUEST-CONFIRM-CODE
-  @ApiResponse({
-    status: 200,
-    description: 'Confirmation code sent successfully. Returns message.',
-    schema: { example: { message: 'Confirmation code sent successfully' } },
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Account already confirmed or too many attempts',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'User not found',
-  })
+  @ApiRouteDocumentation(AuthDocs.requestConfirmCode)
   @Post('request-confirm-code')
   async requestConfirmCode(
     @Body() requestConfirmCodeDto: RequestConfirmCodeDto,
